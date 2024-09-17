@@ -9,6 +9,12 @@ public class DataContext(DbContextOptions options) : IdentityDbContext<AppUser, 
     IdentityUserClaim<int>, AppUserRole, IdentityUserLogin<int>, IdentityRoleClaim<int>,
     IdentityUserToken<int>>(options)
 {
+    public DbSet<Group> Groups { get; set; }
+    public DbSet<UserGroup> UserGroups { get; set; }
+    public DbSet<Hero> Heroes { get; set; }
+    public DbSet<Map> Maps { get; set; }
+    public DbSet<GroupMap> GroupMaps { get; set; }
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
