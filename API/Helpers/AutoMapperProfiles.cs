@@ -22,5 +22,7 @@ public class AutoMapperProfiles : Profile
         CreateMap<HeroCreateDto, Hero>();
         CreateMap<Map, MapDto>();
         CreateMap<MapCreateDto, Map>();
+        CreateMap<GroupMap, GroupMapDto>()
+            .ForMember(x => x.MapName, y => y.MapFrom(z => z.Map.Name));
     }
 }

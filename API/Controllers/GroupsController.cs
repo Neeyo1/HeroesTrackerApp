@@ -10,7 +10,7 @@ namespace API.Controllers;
 
 [Authorize]
 public class GroupsController(IGroupRepository groupRepository, IUserRepository userRepository,
-    IMapper mapper) : BaseApiController
+    IGroupMapRepository groupMapRepository, IMapRepository mapRepository, IMapper mapper) : BaseApiController
 {
     [HttpGet]
     public async Task<ActionResult<IEnumerable<GroupDto>>> GetGroups()
@@ -168,5 +168,62 @@ public class GroupsController(IGroupRepository groupRepository, IUserRepository 
 
         if (await groupRepository.Complete()) return NoContent();
         return BadRequest("Failed to edit moderators");
+    }
+
+    [HttpGet("{groupId}/maps")]
+    public async Task<ActionResult<IEnumerable<GroupMapDto>>> GetGroupMaps(int groupId)
+    {
+        var groupMaps = await groupMapRepository.GetGroupMapsAsync(groupId);
+        return Ok(groupMaps);
+    }
+
+    [HttpGet("{groupId}/maps/{mapId}")]
+    public async Task<ActionResult<GroupMapDto>> GetGroupMap(int groupId, int mapId)
+    {
+        var groupMap = await groupMapRepository.GetGroupMapAsync(groupId, mapId);
+        if (groupMap == null) return BadRequest("Groupmap does not exist");
+
+        var map = await mapRepository.GetMapAsync(mapId);
+        if (map == null) return BadRequest("Map does not exist");
+
+        var result = mapper.Map<GroupMapDto>(groupMap);
+        result.MapName = map.Name;
+
+        return Ok(result);
+    }
+
+    [HttpPost("{groupId}/maps/{mapId}")]
+    public async Task<ActionResult<GroupMapDto>> CreateGroupMap(int groupId, int mapId)
+    {
+        var user = await userRepository.GetUserByUsernameAsync(User.GetUsername());
+        if (user == null || user.UserName == null) return BadRequest("Could not find user");
+
+        var groupMap = new GroupMap
+        {
+            GroupId = groupId,
+            MapId = mapId,
+            UpdatedBy = user.KnownAs + "(admin)"
+        };
+
+        groupMapRepository.AddGroupMap(groupMap);
+
+        if (await groupRepository.Complete()) return NoContent();
+        return BadRequest("Failed to add groupmap");
+    }
+
+    [HttpPut("{groupId}/maps/{mapId}")]
+    public async Task<ActionResult<GroupMapDto>> EditGroupMap(int groupId, int mapId)
+    {
+        var user = await userRepository.GetUserByUsernameAsync(User.GetUsername());
+        if (user == null || user.UserName == null) return BadRequest("Could not find user");
+
+        var groupMap = await groupMapRepository.GetGroupMapAsync(groupId, mapId);
+        if (groupMap == null) return BadRequest("Could not find groupmap");
+        
+        groupMap.Updated = DateTime.UtcNow;
+        groupMap.UpdatedBy = user.KnownAs;
+
+        if (await groupRepository.Complete()) return NoContent();
+        return BadRequest("Failed to edit groupmap");
     }
 }
