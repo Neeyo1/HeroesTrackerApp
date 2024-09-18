@@ -4,30 +4,50 @@ using API.Extensions;
 using API.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
 [Authorize]
 public class GroupsController(IGroupRepository groupRepository, IUserRepository userRepository,
-    IGroupMapRepository groupMapRepository, IMapRepository mapRepository, IMapper mapper) : BaseApiController
+    IGroupMapRepository groupMapRepository, IMapRepository mapRepository, 
+    UserManager<AppUser> userManager, IMapper mapper) : BaseApiController
 {
-    [HttpGet]
+    [Authorize(Policy = "RequireModeratorRole")]
+    [HttpGet("all")]
     public async Task<ActionResult<IEnumerable<GroupDto>>> GetGroups()
     {
         var groups = await groupRepository.GetGroupsAsync();
         return Ok(groups);
     }
 
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<GroupDto>>> GetMyGroups()
+    {
+        var user = await userRepository.GetUserByUsernameAsync(User.GetUsername());
+        if (user == null) return BadRequest("Could not find user");
+
+        var groups = await groupRepository.GetMyGroupsAsync(user.Id);
+        return Ok(groups);
+    }
+
     [HttpGet("{groupId}")]
     public async Task<ActionResult<GroupDto>> GetGroup(int groupId)
     {
+        var user = await userRepository.GetUserByUsernameAsync(User.GetUsername());
+        if (user == null) return BadRequest("Could not find user");
+
         var group = await groupRepository.GetGroupAsync(groupId);
         if (group == null) return BadRequest("Group does not exist");
+
+        if(!await IsUserInGroup(user.Id, groupId) && !await IsUserAdmin(user))
+            return Unauthorized();
 
         return Ok(mapper.Map<GroupDto>(group));
     }
 
+    [Authorize(Policy = "RequireAdminRole")]
     [HttpPost]
     public async Task<ActionResult<GroupDto>> CreateGroup(GroupCreateDto groupCreateDto)
     {
@@ -48,6 +68,7 @@ public class GroupsController(IGroupRepository groupRepository, IUserRepository 
         return BadRequest("Failed to add owner to group");
     }
 
+    [Authorize(Policy = "RequireModeratorRole")]
     [HttpPut("{groupId}")]
     public async Task<ActionResult<GroupDto>> EditGroup(GroupCreateDto groupEditDto, int groupId)
     {
@@ -74,7 +95,7 @@ public class GroupsController(IGroupRepository groupRepository, IUserRepository 
         var group = await groupRepository.GetGroupAsync(groupId);
         if (group == null) return BadRequest("Could not find group");
 
-        if (group.OwnerId != user.Id) return Unauthorized();
+        if (group.OwnerId != user.Id && !await IsUserAdmin(user)) return Unauthorized();
         
         groupRepository.DeleteGroup(group);
 
@@ -85,8 +106,14 @@ public class GroupsController(IGroupRepository groupRepository, IUserRepository 
     [HttpGet("members/{groupId}")]
     public async Task<ActionResult<IEnumerable<MemberDto>>> GetMembersForGroup(int groupId)
     {
+        var user = await userRepository.GetUserByUsernameAsync(User.GetUsername());
+        if (user == null) return BadRequest("Could not find user");
+
         var group = await groupRepository.GetGroupAsync(groupId);
         if (group == null) return BadRequest("Could not find group");
+
+        if(!await IsUserInGroup(user.Id, groupId) && !await IsUserAdmin(user))
+            return Unauthorized();
 
         var members = groupRepository.GetGroupMembersAsync(groupId);
         return Ok(members.Result);
@@ -105,13 +132,14 @@ public class GroupsController(IGroupRepository groupRepository, IUserRepository 
         if (group == null) return BadRequest("Could not find group");
 
         if (group.OwnerId == userToEdit.Id) return BadRequest("Group owner cannot be removed from group");
-        if (group.OwnerId != user.Id && !await groupRepository.IsUserModerator(user.Id, groupId))
-            return Unauthorized();
+        if (group.OwnerId != user.Id && !await groupRepository.IsUserModeratorAsync(user.Id, groupId)
+            && !await IsUserAdmin(user))
+                return Unauthorized();
 
         var membersUsernames = await groupRepository.GetGroupMembersUsernamesAsync(groupId);
         if (!membersUsernames.Contains(userToEdit.UserName))
         {
-            if (group.OwnerId == user.Id && isMod == "true")
+            if ((group.OwnerId == user.Id || await IsUserAdmin(user)) && isMod == "true")
             {
                 groupRepository.AddUserToGroup(userToEditId, groupId, true);
             } else 
@@ -121,7 +149,8 @@ public class GroupsController(IGroupRepository groupRepository, IUserRepository 
             group.MembersCount++;
         } else
         {
-            if (await groupRepository.IsUserModerator(userToEditId, groupId) && group.OwnerId != user.Id)
+            if (await groupRepository.IsUserModeratorAsync(userToEditId, groupId)
+                && group.OwnerId != user.Id && !await IsUserAdmin(user))
             {
                 return BadRequest("You cannot remove moderator user without permissions to do so");
             }
@@ -149,7 +178,7 @@ public class GroupsController(IGroupRepository groupRepository, IUserRepository 
         if (group == null) return BadRequest("Could not find group");
 
         if (group.OwnerId == userToEdit.Id) return BadRequest("Cannot set owner as moderator");
-        if (group.OwnerId != user.Id)
+        if (group.OwnerId != user.Id && !await IsUserAdmin(user))
             return Unauthorized();
 
         if (mod != "true" && mod != "false") return BadRequest("Mod has to be set to either true or false");
@@ -157,11 +186,11 @@ public class GroupsController(IGroupRepository groupRepository, IUserRepository 
         var userGroup = await groupRepository.GetUserGroupAsync(userToEditId, groupId);
         if (userGroup == null) return BadRequest("Could not find usergroup");
 
-        if (await groupRepository.IsUserModerator(userToEditId, groupId) && mod == "false")
+        if (await groupRepository.IsUserModeratorAsync(userToEditId, groupId) && mod == "false")
         {
             groupRepository.RemoveUserFromModerators(userGroup);
         } else
-        if (!await groupRepository.IsUserModerator(userToEditId, groupId) && mod == "true")
+        if (!await groupRepository.IsUserModeratorAsync(userToEditId, groupId) && mod == "true")
         {
             groupRepository.AddUserToModerators(userGroup);
         }
@@ -173,6 +202,12 @@ public class GroupsController(IGroupRepository groupRepository, IUserRepository 
     [HttpGet("{groupId}/maps")]
     public async Task<ActionResult<IEnumerable<GroupMapDto>>> GetGroupMaps(int groupId)
     {
+        var user = await userRepository.GetUserByUsernameAsync(User.GetUsername());
+        if (user == null) return BadRequest("Could not find user");
+
+        if(!await IsUserInGroup(user.Id, groupId) && !await IsUserAdmin(user))
+            return Unauthorized();
+
         var groupMaps = await groupMapRepository.GetGroupMapsAsync(groupId);
         return Ok(groupMaps);
     }
@@ -180,6 +215,12 @@ public class GroupsController(IGroupRepository groupRepository, IUserRepository 
     [HttpGet("{groupId}/maps/{mapId}")]
     public async Task<ActionResult<GroupMapDto>> GetGroupMap(int groupId, int mapId)
     {
+        var user = await userRepository.GetUserByUsernameAsync(User.GetUsername());
+        if (user == null) return BadRequest("Could not find user");
+
+        if(!await IsUserInGroup(user.Id, groupId) && !await IsUserAdmin(user))
+            return Unauthorized();
+
         var groupMap = await groupMapRepository.GetGroupMapAsync(groupId, mapId);
         if (groupMap == null) return BadRequest("Groupmap does not exist");
 
@@ -192,17 +233,15 @@ public class GroupsController(IGroupRepository groupRepository, IUserRepository 
         return Ok(result);
     }
 
+    [Authorize(Policy = "RequireModeratorRole")]
     [HttpPost("{groupId}/maps/{mapId}")]
     public async Task<ActionResult<GroupMapDto>> CreateGroupMap(int groupId, int mapId)
     {
-        var user = await userRepository.GetUserByUsernameAsync(User.GetUsername());
-        if (user == null || user.UserName == null) return BadRequest("Could not find user");
-
         var groupMap = new GroupMap
         {
             GroupId = groupId,
             MapId = mapId,
-            UpdatedBy = user.KnownAs + "(admin)"
+            UpdatedBy = "(system)"
         };
 
         groupMapRepository.AddGroupMap(groupMap);
@@ -217,6 +256,9 @@ public class GroupsController(IGroupRepository groupRepository, IUserRepository 
         var user = await userRepository.GetUserByUsernameAsync(User.GetUsername());
         if (user == null || user.UserName == null) return BadRequest("Could not find user");
 
+        if(!await IsUserInGroup(user.Id, groupId) && !await IsUserAdmin(user))
+            return Unauthorized();
+
         var groupMap = await groupMapRepository.GetGroupMapAsync(groupId, mapId);
         if (groupMap == null) return BadRequest("Could not find groupmap");
         
@@ -225,5 +267,16 @@ public class GroupsController(IGroupRepository groupRepository, IUserRepository 
 
         if (await groupRepository.Complete()) return NoContent();
         return BadRequest("Failed to edit groupmap");
+    }
+
+    private async Task<bool> IsUserInGroup(int userId, int groupId)
+    {
+        return await groupRepository.GetUserGroupAsync(userId, groupId) != null;
+    }
+
+    private async Task<bool> IsUserAdmin(AppUser user)
+    {
+        var userRoles = await userManager.GetRolesAsync(user);
+        return userRoles.Contains("Admin");
     }
 }

@@ -33,6 +33,15 @@ public class GroupRepository(DataContext context, IMapper mapper) : IGroupReposi
             .ToListAsync();
     }
 
+    public async Task<IEnumerable<GroupDto>> GetMyGroupsAsync(int userId)
+    {
+        return await context.UserGroups
+            .Where(x => x.UserId == userId)
+            .Select(x => x.Group)
+            .ProjectTo<GroupDto>(mapper.ConfigurationProvider)
+            .ToListAsync();
+    }
+
     public void AddUserToGroup(int userId, int groupId, bool isModerator)
     {
         var userGroup = new UserGroup
@@ -89,7 +98,7 @@ public class GroupRepository(DataContext context, IMapper mapper) : IGroupReposi
             .ToListAsync();
     }
 
-    public async Task<bool> IsUserModerator(int userId, int groupId)
+    public async Task<bool> IsUserModeratorAsync(int userId, int groupId)
     {
         var userGroup = await GetUserGroupAsync(userId, groupId);
         if (userGroup == null) return false;
