@@ -18,5 +18,9 @@ public class AutoMapperProfiles : Profile
             .ForMember(x => x.Username, y => y.MapFrom(z => z.User.UserName))
             .ForMember(x => x.KnownAs, y => y.MapFrom(z => z.User.KnownAs))
             .ForMember(x => x.IsModerator, y => y.MapFrom(z => z.IsModerator));
+        CreateMap<Hero, HeroDto>();
+        CreateMap<HeroCreateDto, Hero>();
+        CreateMap<Map, MapDto>();
+        CreateMap<MapCreateDto, Map>();
     }
 }
