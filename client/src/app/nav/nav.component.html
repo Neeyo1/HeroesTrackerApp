@@ -1,0 +1,43 @@
+<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+    <div class="container">
+      <a class="navbar-brand">Heroes Tracker</a>
+        <ul class="navbar-nav me-auto mb-2 mb-md-0">
+          @if (accountService.currentUser()) {
+            <li class="nav-item">
+                <a class="nav-link">Grupy</a>
+            </li>
+          }
+          <li class="nav-item">
+            <a class="nav-link">Info</a>
+          </li>
+        </ul>
+
+        @if (accountService.currentUser()) {
+            <div dropdown class="dropdown">
+                <a dropdownToggle class="dropdown-toggle text-light text-decoration-none">Moje konto</a>
+                <div *dropdownMenu class="dropdown-menu">
+                    <a class="dropdown-item">Edytuj profil</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" (click)="logout()">Wyloguj</a>
+                </div>
+            </div>
+        }
+
+        @if (!accountService.currentUser()) {
+            <form class="d-flex" #loginFrom="ngForm" (ngSubmit)="login()" autocomplete="off">
+                <input 
+                    name="username" 
+                    [(ngModel)]="model.username"
+                    class="form-control me-2" 
+                    placeholder="Nazwa użytkownika">
+                <input 
+                    name="password" 
+                    [(ngModel)]="model.password"
+                    class="form-control me-2" 
+                    type="password" 
+                    placeholder="Hasło">
+                <button class="btn btn-outline-success" type="submit">Zaloguj</button>
+            </form>
+        }
+    </div>
+  </nav>
