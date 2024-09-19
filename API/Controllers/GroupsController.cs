@@ -186,11 +186,12 @@ public class GroupsController(IGroupRepository groupRepository, IUserRepository 
         var userGroup = await groupRepository.GetUserGroupAsync(userToEditId, groupId);
         if (userGroup == null) return BadRequest("Could not find usergroup");
 
-        if (await groupRepository.IsUserModeratorAsync(userToEditId, groupId) && mod == "false")
+        var isUserModerator = await groupRepository.IsUserModeratorAsync(userToEditId, groupId);
+        if (isUserModerator && mod == "false")
         {
             groupRepository.RemoveUserFromModerators(userGroup);
         } else
-        if (!await groupRepository.IsUserModeratorAsync(userToEditId, groupId) && mod == "true")
+        if (!isUserModerator && mod == "true")
         {
             groupRepository.AddUserToModerators(userGroup);
         }
