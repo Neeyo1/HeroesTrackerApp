@@ -1,6 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AccountService } from '../_services/account.service';
+import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-register',
@@ -11,15 +13,16 @@ import { AccountService } from '../_services/account.service';
 })
 export class RegisterComponent {
   private accountService = inject(AccountService);
+  private router = inject(Router);
+  private toastr = inject(ToastrService);
   model: any = {};
 
   register(){
     this.accountService.register(this.model).subscribe({
-      next: response => {
-        console.log(response);
-        //return to home page
+      next: () => {
+        this.router.navigateByUrl("/")
       },
-      error: error => console.log(error)
+      error: error => this.toastr.error(error.error)
     });
   }
 }
