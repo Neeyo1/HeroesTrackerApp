@@ -1,1 +1,66 @@
-<p>group-members works!</p>
+@if (!group) {
+    Nothing to display
+}
+
+@if (group) {
+    <div class="row">
+        <div class=" col-auto ms-auto">
+            <div class="btn-group" role="group">
+                <button 
+                    routerLink="/groups/{{group.id}}" 
+                    type="button" 
+                    class="btn btn-dark btn-sm">
+                    Szczegóły
+                </button>
+                <button 
+                    routerLink="/groups/{{group.id}}/timers" 
+                    type="button" 
+                    class="btn btn-dark btn-sm">
+                    Timery
+                </button>
+                <button 
+                    routerLink="/groups/{{group.id}}/members" 
+                    type="button" 
+                    class="btn btn-dark btn-sm"
+                    disabled>
+                    Użytkownicy
+                </button>
+            </div>
+            
+        </div>
+    </div>
+    <div class="row">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col" class="col-6">Nazwa użytkownika</th>
+                    <th scope="col" class="col-2">Pseudonim</th>
+                    <th scope="col" class="col-2">Ranga</th>
+                    <th scope="col" class="col-2">Akcja</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (member of groupMembers; track member.id) {
+                <tr>
+                    <td>{{member.username}}</td>
+                    <td>{{member.knownAs}}</td>
+                    @if (member.username == group.owner.username) {
+                        <td>Admin</td>
+                    } @else if (member.isModerator) {
+                        <td>Moderator</td>
+                    } @else {
+                        <td>Użytkownik</td>
+                    }
+                    @if (role == "owner") {
+                        <td>Btn adm</td>
+                    } @else if (role == "moderator") {
+                        <td>Btn mod</td>
+                    } @else {
+                        <td></td>
+                    }
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

@@ -9,14 +9,14 @@
                 <button 
                     routerLink="/groups/{{group.id}}" 
                     type="button" 
-                    class="btn btn-dark btn-sm">
+                    class="btn btn-dark btn-sm"
+                    disabled>
                     Szczegóły
                 </button>
                 <button 
                     routerLink="/groups/{{group.id}}/timers" 
                     type="button" 
-                    class="btn btn-dark btn-sm"
-                    disabled>
+                    class="btn btn-dark btn-sm">
                     Timery
                 </button>
                 <button 
@@ -28,5 +28,9 @@
             </div>
             
         </div>
+    </div>
+    <div class="row">
+        <h4>{{group.groupName}}</h4>
+        <h6>Użytkownicy {{group.membersCount}}/30</h6>
     </div>
 }

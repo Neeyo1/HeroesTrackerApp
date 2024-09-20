@@ -14,8 +14,6 @@ import { RegisterComponent } from "./register/register.component";
   styleUrl: './app.component.css'
 })
 export class AppComponent implements OnInit{
-  title = 'client';
-  http = inject(HttpClient);
   private accountService = inject(AccountService);
   maps: any;
 

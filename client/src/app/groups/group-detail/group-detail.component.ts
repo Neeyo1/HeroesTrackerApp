@@ -1,16 +1,16 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
 import { GroupService } from '../../_services/group.service';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Group } from '../../_models/group';
 
 @Component({
-  selector: 'app-group-timers',
+  selector: 'app-group-detail',
   standalone: true,
   imports: [RouterLink],
-  templateUrl: './group-timers.component.html',
-  styleUrl: './group-timers.component.css'
+  templateUrl: './group-detail.component.html',
+  styleUrl: './group-detail.component.css'
 })
-export class GroupTimersComponent implements OnInit{
+export class GroupDetailComponent implements OnInit{
   private groupService = inject(GroupService);
   private route = inject(ActivatedRoute);
   group?: Group;
