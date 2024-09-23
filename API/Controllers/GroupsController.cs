@@ -29,11 +29,15 @@ public class GroupsController(IGroupRepository groupRepository, IUserRepository 
         if (user == null) return BadRequest("Could not find user");
 
         var groups = await groupRepository.GetMyGroupsAsync(user.Id);
+        foreach (var group in groups)
+        {
+            group.Members = await groupRepository.GetGroupMembersAsync(group.Id);
+        }
         return Ok(groups);
     }
 
     [HttpGet("{groupId}")]
-    public async Task<ActionResult<GroupDto>> GetGroup(int groupId)
+    public async Task<ActionResult<GroupDto>> GetGroup(int groupId, [FromQuery] string? withMembers)
     {
         var user = await userRepository.GetUserByUsernameAsync(User.GetUsername());
         if (user == null) return BadRequest("Could not find user");
@@ -43,6 +47,13 @@ public class GroupsController(IGroupRepository groupRepository, IUserRepository 
 
         if(!await IsUserInGroup(user.Id, groupId) && !await IsUserAdmin(user))
             return Unauthorized();
+
+        if (withMembers == "true") {
+            var members = await groupRepository.GetGroupMembersAsync(groupId);
+            var result = mapper.Map<GroupDto>(group);
+            result.Members = members;
+            return Ok(result);
+        }
 
         return Ok(mapper.Map<GroupDto>(group));
     }

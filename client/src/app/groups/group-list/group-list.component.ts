@@ -11,17 +11,14 @@ import { Router, RouterLink } from '@angular/router';
   styleUrl: './group-list.component.css'
 })
 export class GroupListComponent implements OnInit{
-  private groupService = inject(GroupService);
+  groupService = inject(GroupService);
   private router = inject(Router);
-  groups: Group[] = [];
 
   ngOnInit(): void {
-    this.loadGroups();
+    if (this.groupService.groups().length == 0) this.loadGroups();
   }
 
   loadGroups(){
-    this.groupService.getGroups().subscribe({
-      next: groups => this.groups = groups
-    })
+    this.groupService.getGroups();
   }
 }

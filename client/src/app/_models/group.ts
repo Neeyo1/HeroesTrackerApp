@@ -1,3 +1,4 @@
+import { GroupMember } from "./groupMember";
 import { Member } from "./member"
 
 export interface Group {
@@ -7,4 +8,5 @@ export interface Group {
     createdAt: Date;
     membersCount: number;
     owner: Member;
+    members: GroupMember[];
 }

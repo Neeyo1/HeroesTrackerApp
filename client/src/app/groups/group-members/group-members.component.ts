@@ -22,7 +22,7 @@ export class GroupMembersComponent implements OnInit{
 
   ngOnInit(): void {
     this.loadGroup();
-    this.loadGroupMembers();
+    //this.loadGroupMembers();
   }
 
   loadGroup(){
@@ -30,7 +30,11 @@ export class GroupMembersComponent implements OnInit{
     if (!groupId) return;
 
     this.groupService.getGroup(groupId).subscribe({
-      next: group => this.group = group
+      next: group => {
+        this.group = group;
+        this.groupMembers = group.members;
+        this.checkUserRole();
+      }
     })
   }
 
@@ -38,12 +42,12 @@ export class GroupMembersComponent implements OnInit{
     const groupId = Number(this.route.snapshot.paramMap.get("id"));
     if (!groupId) return;
 
-    this.groupService.getGroupMembers(groupId).subscribe({
-      next: groupMembers => {
-        this.groupMembers = groupMembers;
+    this.groupService.getGroup(groupId).subscribe({
+      next: group => {
+        this.groupMembers = group.members;
         this.checkUserRole();
       }
-    })
+    });
   }
 
   checkUserRole(){

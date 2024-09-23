@@ -8,4 +8,5 @@ public class GroupDto
     public DateTime CreatedAt { get; set; }
     public int MembersCount { get; set; }
     public MemberDto Owner { get; set; } = null!;
+    public IEnumerable<GroupMemberDto> Members { get; set; } = [];
 }
