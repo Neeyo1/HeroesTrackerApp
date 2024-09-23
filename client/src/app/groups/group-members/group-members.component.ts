@@ -33,6 +33,7 @@ export class GroupMembersComponent implements OnInit{
       next: group => {
         this.group = group;
         this.groupMembers = group.members;
+        //this.groupService.groupCache.set(`group-${group.id}`, group);
         this.checkUserRole();
       }
     })

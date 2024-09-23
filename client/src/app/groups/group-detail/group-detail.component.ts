@@ -24,7 +24,10 @@ export class GroupDetailComponent implements OnInit{
     if (!groupId) return;
 
     this.groupService.getGroup(groupId).subscribe({
-      next: group => this.group = group
+      next: group => {
+        this.group = group;
+        //this.groupService.groupCache.set(`group-${group.id}`, group);
+      }
     })
   }
 }

@@ -4,7 +4,7 @@ import { environment } from '../../environments/environment';
 import { Group } from '../_models/group';
 import { AccountService } from './account.service';
 import { GroupMember } from '../_models/groupMember';
-import { of } from 'rxjs';
+import { of, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +13,7 @@ export class GroupService {
   private http = inject(HttpClient);
   baseUrl = environment.apiUrl;
   groups = signal<Group[]>([]);
+  groupCache = new Map<string, Group>();
 
   getGroups(){
     return this.http.get<Group[]>(this.baseUrl + "groups").subscribe({
@@ -23,7 +24,14 @@ export class GroupService {
   getGroup(id: number){
     const group = this.groups().find(x => x.id == id);
     if (group != undefined) return of(group);
+
+    const groupFromCache = this.groupCache.get(`group-${id}`);
+    if (groupFromCache != undefined) return of(groupFromCache);
     
-    return this.http.get<Group>(this.baseUrl + "groups/" + id + "?withMembers=true");
+    return this.http.get<Group>(this.baseUrl + "groups/" + id + "?withMembers=true").pipe(
+      tap(groupFromApi => {
+        this.groupCache.set(`group-${groupFromApi.id}`, groupFromApi);
+      }
+    ));
   }
 }
