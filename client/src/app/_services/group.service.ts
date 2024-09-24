@@ -5,6 +5,7 @@ import { Group } from '../_models/group';
 import { AccountService } from './account.service';
 import { GroupMember } from '../_models/groupMember';
 import { of, tap } from 'rxjs';
+import { Member } from '../_models/member';
 
 @Injectable({
   providedIn: 'root'
@@ -33,5 +34,13 @@ export class GroupService {
         this.groupCache.set(`group-${groupFromApi.id}`, groupFromApi);
       }
     ));
+  }
+
+  addOrRemoveMember(username: string, groupId: number){
+    return this.http.put<Member | null>(this.baseUrl + `groups/members/${groupId}?userToEditUsername=${username}`, {});
+  }
+
+  addOrRemoveModerator(username: string, groupId: number, isModerator: boolean){
+    return this.http.put(this.baseUrl + `groups/moderators/${groupId}?userToEditUsername=${username}&mod=${isModerator}`, {});
   }
 }

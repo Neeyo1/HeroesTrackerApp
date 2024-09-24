@@ -131,12 +131,12 @@ public class GroupsController(IGroupRepository groupRepository, IUserRepository 
     }
 
     [HttpPut("members/{groupId}")]
-    public async Task<ActionResult<IEnumerable<MemberDto>>> AddOrRemoveMemberForGroup(int groupId, [FromQuery]int userToEditId, string? isMod)
+    public async Task<ActionResult<IEnumerable<MemberDto>>> AddOrRemoveMemberForGroup(int groupId, [FromQuery]string userToEditUsername, string? isMod)
     {
         var user = await userRepository.GetUserByUsernameAsync(User.GetUsername());
         if (user == null) return BadRequest("Could not find user");
 
-        var userToEdit = await userRepository.GetUserByIdAsync(userToEditId);
+        var userToEdit = await userRepository.GetUserByUsernameAsync(userToEditUsername);
         if (userToEdit == null) return BadRequest("Could not find user to edit");
 
         var group = await groupRepository.GetGroupAsync(groupId);
@@ -147,42 +147,49 @@ public class GroupsController(IGroupRepository groupRepository, IUserRepository 
             && !await IsUserAdmin(user))
                 return Unauthorized();
 
+        var action = "";
         var membersUsernames = await groupRepository.GetGroupMembersUsernamesAsync(groupId);
         if (!membersUsernames.Contains(userToEdit.UserName))
         {
             if ((group.OwnerId == user.Id || await IsUserAdmin(user)) && isMod == "true")
             {
-                groupRepository.AddUserToGroup(userToEditId, groupId, true);
+                groupRepository.AddUserToGroup(userToEdit.Id, groupId, true);
             } else 
             {
-                groupRepository.AddUserToGroup(userToEditId, groupId, false);
+                groupRepository.AddUserToGroup(userToEdit.Id, groupId, false);
             }
             group.MembersCount++;
+            action = "add";
         } else
         {
-            if (await groupRepository.IsUserModeratorAsync(userToEditId, groupId)
+            if (await groupRepository.IsUserModeratorAsync(userToEdit.Id, groupId)
                 && group.OwnerId != user.Id && !await IsUserAdmin(user))
             {
                 return BadRequest("You cannot remove moderator user without permissions to do so");
             }
-            var userGroup = await groupRepository.GetUserGroupAsync(userToEditId, groupId);
+            var userGroup = await groupRepository.GetUserGroupAsync(userToEdit.Id, groupId);
             if (userGroup == null) return BadRequest("Could not find usergroup");
 
             groupRepository.RemoveUserFromGroup(userGroup);
             group.MembersCount--;
+            action = "remove";
         }
 
-        if (await groupRepository.Complete()) return NoContent();
+        if (await groupRepository.Complete())
+        {
+            if (action == "add") return Ok(mapper.Map<MemberDto>(userToEdit));
+            if (action == "remove") return NoContent();
+        } 
         return BadRequest("Failed to edit member");
     }
 
     [HttpPut("moderators/{groupId}")]
-    public async Task<ActionResult<IEnumerable<MemberDto>>> AddOrRemoveModeratorForGroup(int groupId, [FromQuery]int userToEditId, string mod)
+    public async Task<ActionResult<IEnumerable<MemberDto>>> AddOrRemoveModeratorForGroup(int groupId, [FromQuery]string userToEditUsername, string mod)
     {
         var user = await userRepository.GetUserByUsernameAsync(User.GetUsername());
         if (user == null) return BadRequest("Could not find user");
 
-        var userToEdit = await userRepository.GetUserByIdAsync(userToEditId);
+        var userToEdit = await userRepository.GetUserByUsernameAsync(userToEditUsername);
         if (userToEdit == null) return BadRequest("Could not find user to edit");
 
         var group = await groupRepository.GetGroupAsync(groupId);
@@ -194,10 +201,10 @@ public class GroupsController(IGroupRepository groupRepository, IUserRepository 
 
         if (mod != "true" && mod != "false") return BadRequest("Mod has to be set to either true or false");
 
-        var userGroup = await groupRepository.GetUserGroupAsync(userToEditId, groupId);
+        var userGroup = await groupRepository.GetUserGroupAsync(userToEdit.Id, groupId);
         if (userGroup == null) return BadRequest("Could not find usergroup");
 
-        var isUserModerator = await groupRepository.IsUserModeratorAsync(userToEditId, groupId);
+        var isUserModerator = await groupRepository.IsUserModeratorAsync(userToEdit.Id, groupId);
         if (isUserModerator && mod == "false")
         {
             groupRepository.RemoveUserFromModerators(userGroup);

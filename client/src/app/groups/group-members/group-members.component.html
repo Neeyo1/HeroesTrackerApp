@@ -1,25 +1,39 @@
-@if (!group) {
+@if (!group()) {
     Nothing to display
 }
 
-@if (group) {
+@if (group()) {
     <div class="row">
-        <div class=" col-auto ms-auto">
+        <div class="col-auto me-auto">
+            <form #AddOrRemoveMemberForm="ngForm" (ngSubmit)="addMember()" autocomplete="off">
+                <div class="input-group mb-3">
+                    <input 
+                        type="text"
+                        class="form-control"
+                        name="username"
+                        [(ngModel)]="model.username"
+                        placeholder="Nazwa użytkownika"
+                    >
+                    <button class="btn btn-success" type="submit">Dodaj</button>
+                </div>
+            </form>
+        </div>
+        <div class="col-auto ms-auto">
             <div class="btn-group" role="group">
                 <button 
-                    routerLink="/groups/{{group.id}}" 
+                    routerLink="/groups/{{group()?.id}}" 
                     type="button" 
                     class="btn btn-dark btn-sm">
                     Szczegóły
                 </button>
                 <button 
-                    routerLink="/groups/{{group.id}}/timers" 
+                    routerLink="/groups/{{group()?.id}}/timers" 
                     type="button" 
                     class="btn btn-dark btn-sm">
                     Timery
                 </button>
                 <button 
-                    routerLink="/groups/{{group.id}}/members" 
+                    routerLink="/groups/{{group()?.id}}/members" 
                     type="button" 
                     class="btn btn-dark btn-sm"
                     disabled>
@@ -40,24 +54,48 @@
                 </tr>
             </thead>
             <tbody>
-                @for (member of groupMembers; track member.id) {
-                <tr>
+                @for (member of groupMembers(); track member.id) {
+                <tr class="align-middle">
                     <td>{{member.username}}</td>
                     <td>{{member.knownAs}}</td>
-                    @if (member.username == group.owner.username) {
+                    @if (member.username == group()?.owner?.username) {
                         <td>Admin</td>
                     } @else if (member.isModerator) {
                         <td>Moderator</td>
                     } @else {
                         <td>Użytkownik</td>
                     }
-                    @if (role == "owner") {
-                        <td>Btn adm</td>
-                    } @else if (role == "moderator") {
-                        <td>Btn mod</td>
-                    } @else {
-                        <td></td>
-                    }
+                    <td>
+                        @if (member.username == group()?.owner?.username) {
+                            <button class="btn btn-warning btn-sm" disabled>
+                                <i class="fa-solid fa-crown fa-sm"></i>
+                            </button>
+                        }
+                        @else {
+                            @if (role == "owner" || (role == "moderator" && member.isModerator == false)){
+                                <button class="btn btn-danger btn-sm" 
+                                        (click)="removeMember(member.username)"
+                                >
+                                    <i class="fa-solid fa-trash fa-sm"></i>
+                                </button>
+                            }
+                            @if (role == "owner") {
+                                @if (member.isModerator) {
+                                    <button class="btn btn-dark btn-sm" 
+                                            (click)="removeModerator(member.username)"
+                                    >
+                                        <i class="fa-solid fa-angles-down fa-sm"></i>
+                                    </button>
+                                } @else {
+                                    <button class="btn btn-dark btn-sm" 
+                                            (click)="addModerator(member.username)"
+                                    >
+                                        <i class="fa-solid fa-angles-up fa-sm"></i>
+                                    </button>
+                                }
+                            }
+                        }
+                    </td>
                 </tr>
                 }
             </tbody>
