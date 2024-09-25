@@ -4,11 +4,12 @@ import { GroupService } from '../../_services/group.service';
 import { Group } from '../../_models/group';
 import { Timer } from '../../_models/timer';
 import { TimerService } from '../../_services/timer.service';
+import { TimeagoModule } from 'ngx-timeago';
 
 @Component({
   selector: 'app-group-timers',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, TimeagoModule],
   templateUrl: './group-timers.component.html',
   styleUrl: './group-timers.component.css'
 })

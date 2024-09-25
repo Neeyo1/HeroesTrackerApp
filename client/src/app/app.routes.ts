@@ -7,6 +7,7 @@ import { GroupListComponent } from './groups/group-list/group-list.component';
 import { authGuard } from './_guards/auth.guard';
 import { GroupDetailComponent } from './groups/group-detail/group-detail.component';
 import { GroupMembersComponent } from './groups/group-members/group-members.component';
+import { unregisteredGuard } from './_guards/unregistered.guard';
 
 export const routes: Routes = [
     {path: '', component: HomeComponent},
@@ -21,7 +22,7 @@ export const routes: Routes = [
             {path: 'groups/:id/members', component: GroupMembersComponent},
         ]
     },
-    {path: 'register', component: RegisterComponent},
+    {path: 'register', component: RegisterComponent, canActivate: [unregisteredGuard]},
     {path: 'info', component: InfoComponent},
     {path: '**', component: HomeComponent, pathMatch: 'full'},
 ];

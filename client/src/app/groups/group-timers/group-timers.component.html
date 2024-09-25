@@ -44,7 +44,7 @@
                 @for (timer of this.timerService.timers(); track $index) {
                 <tr class="align-middle">
                     <td>{{timer.mapName}}</td>
-                    <td>{{timer.updated}}</td>
+                    <td>{{timer.updated | timeago}}</td>
                     <td>{{timer.updatedBy}}</td>
                     <td>{{timer.mapAreaId}}</td>
                     <td>{{timer.heroId}}</td>
