@@ -1,7 +1,9 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { GroupService } from '../../_services/group.service';
 import { Group } from '../../_models/group';
+import { Timer } from '../../_models/timer';
+import { TimerService } from '../../_services/timer.service';
 
 @Component({
   selector: 'app-group-timers',
@@ -12,11 +14,13 @@ import { Group } from '../../_models/group';
 })
 export class GroupTimersComponent implements OnInit{
   private groupService = inject(GroupService);
+  timerService = inject(TimerService);
   private route = inject(ActivatedRoute);
-  group?: Group;
+  group = signal<Group | null>(null);
 
   ngOnInit(): void {
     this.loadGroup();
+    if (this.timerService.timers().length == 0) this.loadTimers();
   }
 
   loadGroup(){
@@ -24,7 +28,14 @@ export class GroupTimersComponent implements OnInit{
     if (!groupId) return;
 
     this.groupService.getGroup(groupId).subscribe({
-      next: group => this.group = group
+      next: group => this.group.set(group)
     })
+  }
+
+  loadTimers(){
+    const groupId = Number(this.route.snapshot.paramMap.get("id"));
+    if (!groupId) return;
+
+    this.timerService.getTimers(groupId);
   }
 }

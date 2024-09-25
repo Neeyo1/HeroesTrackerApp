@@ -1,26 +1,26 @@
-@if (!group) {
+@if (!group()) {
     Nothing to display
 }
 
-@if (group) {
+@if (group()) {
     <div class="row">
-        <div class=" col-auto ms-auto">
+        <div class="col-auto ms-auto">
             <div class="btn-group" role="group">
                 <button 
-                    routerLink="/groups/{{group.id}}" 
+                    routerLink="/groups/{{group()?.id}}" 
                     type="button" 
                     class="btn btn-dark btn-sm">
                     Szczegóły
                 </button>
                 <button 
-                    routerLink="/groups/{{group.id}}/timers" 
+                    routerLink="/groups/{{group()?.id}}/timers" 
                     type="button" 
                     class="btn btn-dark btn-sm"
                     disabled>
                     Timery
                 </button>
                 <button 
-                    routerLink="/groups/{{group.id}}/members" 
+                    routerLink="/groups/{{group()?.id}}/members" 
                     type="button" 
                     class="btn btn-dark btn-sm">
                     Użytkownicy
@@ -28,5 +28,29 @@
             </div>
             
         </div>
+    </div>
+    <div class="row">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col" class="col-4">Mapa</th>
+                    <th scope="col" class="col-3">Ostatnio</th>
+                    <th scope="col" class="col-3">Gracz</th>
+                    <th scope="col" class="col-1">Okolica</th>
+                    <th scope="col" class="col-1">Heros</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (timer of this.timerService.timers(); track $index) {
+                <tr class="align-middle">
+                    <td>{{timer.mapName}}</td>
+                    <td>{{timer.updated}}</td>
+                    <td>{{timer.updatedBy}}</td>
+                    <td>{{timer.mapAreaId}}</td>
+                    <td>{{timer.heroId}}</td>
+                </tr>
+                }
+            </tbody>
+        </table>
     </div>
 }
