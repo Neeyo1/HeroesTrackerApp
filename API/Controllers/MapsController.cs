@@ -48,7 +48,7 @@ public class MapsController(IMapRepository mapRepository, IMapper mapper) : Base
     }
 
     [HttpDelete("{mapId}")]
-    public async Task<ActionResult> DeleteHero(int mapId)
+    public async Task<ActionResult> DeleteMap(int mapId)
     {
         var map = await mapRepository.GetMapAsync(mapId);
         if (map == null) return BadRequest("Could not find map");
@@ -57,5 +57,56 @@ public class MapsController(IMapRepository mapRepository, IMapper mapper) : Base
 
         if (await mapRepository.Complete()) return NoContent();
         return BadRequest("Failed to delete map");
+    }
+
+    [HttpGet("areas")]
+    public async Task<ActionResult<IEnumerable<MapAreaDto>>> GetMapAreas()
+    {
+        var mapAreas = await mapRepository.GetMapAreasAsync();
+        return Ok(mapAreas);
+    }
+
+    [HttpGet("areas/{mapAreaId}")]
+    public async Task<ActionResult<MapAreaDto>> GetMapArea(int mapAreaId)
+    {
+        var mapArea = await mapRepository.GetMapAreaAsync(mapAreaId);
+        if (mapArea == null) return BadRequest("Map area does not exist");
+
+        return Ok(mapper.Map<MapAreaDto>(mapArea));
+    }
+
+    [HttpPost("areas")]
+    public async Task<ActionResult<MapAreaDto>> CreateMaparea(MapAreaCreateDto mapAreaCreateDto)
+    {
+        var mapArea = mapper.Map<MapArea>(mapAreaCreateDto);
+
+        mapRepository.AddMapArea(mapArea);
+
+        if (await mapRepository.Complete()) return Ok(mapper.Map<MapAreaDto>(mapArea));
+        return BadRequest("Failed to create map area");
+    }
+
+    [HttpPut("areas/{mapAreaId}")]
+    public async Task<ActionResult<MapAreaDto>> EditMapArea(MapAreaCreateDto mapAreaEditDto, int mapAreaId)
+    {
+        var mapArea = await mapRepository.GetMapAreaAsync(mapAreaId);
+        if (mapArea == null) return BadRequest("Could not find map area");
+        
+        mapper.Map(mapAreaEditDto, mapArea);
+
+        if (await mapRepository.Complete()) return Ok(mapper.Map<MapAreaDto>(mapArea));
+        return BadRequest("Failed to edit map area");
+    }
+
+    [HttpDelete("areas/{mapAreaId}")]
+    public async Task<ActionResult> DeleteMapArea(int mapAreaId)
+    {
+        var mapArea = await mapRepository.GetMapAreaAsync(mapAreaId);
+        if (mapArea == null) return BadRequest("Could not find map area");
+        
+        mapRepository.DeleteMapArea(mapArea);
+
+        if (await mapRepository.Complete()) return NoContent();
+        return BadRequest("Failed to delete map area");
     }
 }

@@ -40,6 +40,29 @@ public class MapRepository(DataContext context, IMapper mapper) : IMapRepository
             .ToListAsync();
     }
 
+    public void AddMapArea(MapArea mapArea)
+    {
+        context.MapAreas.Add(mapArea);
+    }
+
+    public void DeleteMapArea(MapArea mapArea)
+    {
+        context.MapAreas.Remove(mapArea);
+    }
+
+    public async Task<MapArea?> GetMapAreaAsync(int mapAreaId)
+    {
+        return await context.MapAreas
+            .FindAsync(mapAreaId);
+    }
+
+    public async Task<IEnumerable<MapAreaDto>> GetMapAreasAsync()
+    {
+        return await context.MapAreas
+            .ProjectTo<MapAreaDto>(mapper.ConfigurationProvider)
+            .ToListAsync();
+    }
+
     public async Task<bool> Complete()
     {
         return await context.SaveChangesAsync() > 0;

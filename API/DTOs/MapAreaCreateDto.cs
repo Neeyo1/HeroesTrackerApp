@@ -2,9 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace API.DTOs;
 
-public class MapCreateDto
+public class MapAreaCreateDto
 {
     [Required] public required string Name { get; set; }
-    [Required] public int HeroId { get; set; }
-    [Required] public int MapAreaId { get; set; }
 }

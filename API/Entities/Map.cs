@@ -14,4 +14,8 @@ public class Map
 
     //Map - Group
     public ICollection<GroupMap> GroupMaps { get; set; } = [];
+
+    //Map - MapArea
+    public int MapAreaId { get; set; }
+    public MapArea MapArea { get; set; } = null!;
 }

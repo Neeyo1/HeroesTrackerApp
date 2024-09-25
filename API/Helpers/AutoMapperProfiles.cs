@@ -23,6 +23,10 @@ public class AutoMapperProfiles : Profile
         CreateMap<Map, MapDto>();
         CreateMap<MapCreateDto, Map>();
         CreateMap<GroupMap, GroupMapDto>()
-            .ForMember(x => x.MapName, y => y.MapFrom(z => z.Map.Name));
+            .ForMember(x => x.MapName, y => y.MapFrom(z => z.Map.Name))
+            .ForMember(x => x.MapAreaId, y => y.MapFrom(z => z.Map.MapAreaId))
+            .ForMember(x => x.HeroId, y => y.MapFrom(z => z.Map.HeroId));
+        CreateMap<MapArea, MapAreaDto>();
+        CreateMap<MapAreaCreateDto, MapArea>();
     }
 }

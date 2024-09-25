@@ -14,6 +14,7 @@ public class DataContext(DbContextOptions options) : IdentityDbContext<AppUser, 
     public DbSet<Hero> Heroes { get; set; }
     public DbSet<Map> Maps { get; set; }
     public DbSet<GroupMap> GroupMaps { get; set; }
+    public DbSet<MapArea> MapAreas { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -74,6 +75,13 @@ public class DataContext(DbContextOptions options) : IdentityDbContext<AppUser, 
             .HasMany(x => x.GroupMaps)
             .WithOne(x => x.Map)
             .HasForeignKey(x => x.MapId)
+            .IsRequired();
+
+        //MapArea - Map
+        builder.Entity<MapArea>()
+            .HasMany(x => x.Maps)
+            .WithOne(x => x.MapArea)
+            .HasForeignKey(x => x.MapAreaId)
             .IsRequired();
     }
 }

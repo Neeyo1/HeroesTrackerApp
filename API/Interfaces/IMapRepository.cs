@@ -10,5 +10,9 @@ public interface IMapRepository
     Task<Map?> GetMapAsync(int mapId);
     Task<IEnumerable<MapDto>> GetMapsAsync();
     Task<IEnumerable<MapDto>> GetMapsForHeroAsync(int heroId);
+    void AddMapArea(MapArea mapArea);
+    void DeleteMapArea(MapArea mapArea);
+    Task<MapArea?> GetMapAreaAsync(int mapAreaId);
+    Task<IEnumerable<MapAreaDto>> GetMapAreasAsync();
     Task<bool> Complete();
 }
