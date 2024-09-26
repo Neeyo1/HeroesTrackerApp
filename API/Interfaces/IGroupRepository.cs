@@ -8,6 +8,7 @@ public interface IGroupRepository
     void AddGroup(Group group);
     void DeleteGroup(Group group);
     Task<Group?> GetGroupAsync(int groupId);
+    Task<Group?> GetGroupByGroupNameAndServerNameAsync(string groupName, string serverName);
     Task<IEnumerable<GroupDto>> GetGroupsAsync();
     Task<IEnumerable<GroupDto>> GetMyGroupsAsync(int userId);
     void AddUserToGroup(int userId, int groupId, bool isModerator);

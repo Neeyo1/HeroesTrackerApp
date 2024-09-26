@@ -26,6 +26,13 @@ public class GroupRepository(DataContext context, IMapper mapper) : IGroupReposi
             .FirstOrDefaultAsync(x => x.Id == groupId);
     }
 
+    public async Task<Group?> GetGroupByGroupNameAndServerNameAsync(string groupName, string serverName)
+    {
+        return await context.Groups
+            .Where(x => x.GroupName == groupName)
+            .FirstOrDefaultAsync(x => x.ServerName == serverName);
+    }
+
     public async Task<IEnumerable<GroupDto>> GetGroupsAsync()
     {
         return await context.Groups
