@@ -1,3 +1,4 @@
+using API.DTOs;
 using API.Entities;
 using API.Extensions;
 using API.Interfaces;
@@ -8,7 +9,7 @@ namespace API.SignalR;
 
 [Authorize]
 public class TimerHub(IGroupRepository groupRepository, IUserRepository userRepository,
-    IGroupMapRepository groupMapRepository) : Hub
+    IGroupMapRepository groupMapRepository, IHeroRepository heroRepository) : Hub
 {
     public override async Task OnConnectedAsync()
     {
@@ -16,8 +17,8 @@ public class TimerHub(IGroupRepository groupRepository, IUserRepository userRepo
 
         await Groups.AddToGroupAsync(Context.ConnectionId, groupName + "_" + serverName);
 
-        //await Clients.Group(groupName + "_" + serverName).SendAsync("NewMessage", "TestMessage");
-        await Clients.Caller.SendAsync("NewMessage", "TestMessage");
+        //await Clients.Caller.SendAsync("NewMessage", "TestMessage");
+        await GetTimers();
     }
 
     public override Task OnDisconnectedAsync(Exception? exception)
@@ -29,9 +30,59 @@ public class TimerHub(IGroupRepository groupRepository, IUserRepository userRepo
     {
         (string groupName, string serverName, AppUser user, Group group) = await ValidateData(Context);
 
+        var heroes = await heroRepository.GetTimerHeroesAsync();
         var groupMaps = await groupMapRepository.GetGroupMapsAsync(group.Id);
+        
+        foreach (var hero in heroes)
+        {
+            foreach (var groupMap in groupMaps)
+            {
+                var location = hero.Locations.FirstOrDefault(x => x.Id == groupMap.MapAreaId);
+                if (location == null)
+                {
+                    var newLocation = new TimerMapAreaDto
+                    {
+                        Id = groupMap.MapAreaId,
+                        Name = groupMap.MapAreaName,
+                        Maps = [new TimerMapDto
+                        {
+                            MapName = groupMap.MapName,
+                            Updated = groupMap.Updated,
+                            UpdatedBy = groupMap.UpdatedBy
+                        }]
+                    };
+                    hero.Locations = hero.Locations.Append(newLocation);
+                } else
+                {
+                    var newMap = new TimerMapDto
+                    {
+                        MapName = groupMap.MapName,
+                        Updated = groupMap.Updated,
+                        UpdatedBy = groupMap.UpdatedBy
+                    };
+                    location.Maps = location.Maps.Append(newMap);
+                }
+            }    
+        }
 
-        await Clients.Group(groupName + "_" + serverName).SendAsync("GetTimers", groupMaps);
+        await Clients.Caller.SendAsync("GetTimers", heroes);
+    }
+
+    public async Task UpdateTimer(string mapName)
+    {
+        (string groupName, string serverName, AppUser user, Group group) = await ValidateData(Context);
+
+        var groupMap = await groupMapRepository.GetGroupMapByMapNameAsync(group.Id, mapName)
+            ?? throw new Exception("Map does not exist");
+
+        groupMap.Updated = DateTime.UtcNow;
+        groupMap.UpdatedBy = user.KnownAs;
+
+        if (await groupRepository.Complete())
+        {
+            await Clients.Group(groupName + "_" + serverName)
+                .SendAsync("UpdateTimer", new {groupMap.Map.Name, groupMap.Updated, groupMap.UpdatedBy});
+        }
     }
 
     private async Task<(string groupName, string serverName, AppUser user, 

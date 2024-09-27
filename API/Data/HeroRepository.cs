@@ -32,6 +32,13 @@ public class HeroRepository(DataContext context, IMapper mapper) : IHeroReposito
             .ToListAsync();
     }
 
+    public async Task<IEnumerable<TimerHeroDto>> GetTimerHeroesAsync()
+    {
+        return await context.Heroes
+            .ProjectTo<TimerHeroDto>(mapper.ConfigurationProvider)
+            .ToListAsync();
+    }
+
     public async Task<bool> Complete()
     {
         return await context.SaveChangesAsync() > 0;

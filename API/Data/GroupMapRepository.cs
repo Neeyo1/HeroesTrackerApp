@@ -20,6 +20,14 @@ public class GroupMapRepository(DataContext context, IMapper mapper) : IGroupMap
             .Where(x => x.GroupId == groupId)
             .FirstOrDefaultAsync(x => x.MapId == mapId);
     }
+
+    public async Task<GroupMap?> GetGroupMapByMapNameAsync(int groupId, string mapName)
+    {
+        return await context.GroupMaps
+            .Where(x => x.GroupId == groupId)
+            .FirstOrDefaultAsync(x => x.Map.Name == mapName);
+    }
+    
     public async Task<IEnumerable<GroupMapDto>> GetGroupMapsAsync(int groupId)
     {
         return await context.GroupMaps

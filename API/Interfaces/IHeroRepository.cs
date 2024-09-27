@@ -9,5 +9,6 @@ public interface IHeroRepository
     void DeleteHero(Hero hero);
     Task<Hero?> GetHeroAsync(int heroId);
     Task<IEnumerable<HeroDto>> GetHeroesAsync();
+    Task<IEnumerable<TimerHeroDto>> GetTimerHeroesAsync();
     Task<bool> Complete();
 }
