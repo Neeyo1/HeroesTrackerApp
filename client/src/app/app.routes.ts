@@ -8,6 +8,8 @@ import { authGuard } from './_guards/auth.guard';
 import { GroupDetailComponent } from './groups/group-detail/group-detail.component';
 import { GroupMembersComponent } from './groups/group-members/group-members.component';
 import { unregisteredGuard } from './_guards/unregistered.guard';
+import { AdminGroupsComponent } from './admin/admin-groups/admin-groups.component';
+import { AdminGroupCreateComponent } from './admin/admin-group-create/admin-group-create.component';
 
 export const routes: Routes = [
     {path: '', component: HomeComponent},
@@ -20,6 +22,8 @@ export const routes: Routes = [
             {path: 'groups/:id', component: GroupDetailComponent},
             {path: 'groups/:id/timers', component: GroupTimersComponent},
             {path: 'groups/:id/members', component: GroupMembersComponent},
+            {path: 'admin/groups', component: AdminGroupsComponent},
+            {path: 'admin/group/create', component: AdminGroupCreateComponent},
         ]
     },
     {path: 'register', component: RegisterComponent, canActivate: [unregisteredGuard]},

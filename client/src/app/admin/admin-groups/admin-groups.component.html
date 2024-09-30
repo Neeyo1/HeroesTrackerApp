@@ -1,0 +1,29 @@
+<button class="btn btn-success" type="button" routerLink="/admin/group/create">Dodaj grupę</button>
+<table class="table table-hover">
+    <thead>
+      <tr>
+        <th scope="col" class="col-5">Nazwa grupy</th>
+        <th scope="col" class="col-2">Serwer</th>
+        <th scope="col" class="col-2">Liczba członków</th>
+        <th scope="col" class="col-2">Właściciel</th>
+        <th scope="col" class="col-1">Akcja</th>
+      </tr>
+    </thead>
+    <tbody>
+        @for (group of adminService.groups(); track group.id) {
+            <tr>
+                <td>{{group.groupName}}</td>
+                <td>{{group.serverName}}</td>
+                <td>{{group.membersCount}}</td>
+                <td>{{group.owner.knownAs}}</td>
+                <td>
+                    <button class="btn btn-danger btn-sm" 
+                            (click)="deleteGroup(group.id)"
+                    >
+                        <i class="fa-solid fa-trash fa-sm"></i>
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+  </table>

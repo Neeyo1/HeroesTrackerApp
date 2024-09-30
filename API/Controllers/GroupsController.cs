@@ -62,17 +62,21 @@ public class GroupsController(IGroupRepository groupRepository, IUserRepository 
     [HttpPost]
     public async Task<ActionResult<GroupDto>> CreateGroup(GroupCreateDto groupCreateDto)
     {
-        var user = await userRepository.GetUserByUsernameAsync(User.GetUsername());
-        if (user == null) return BadRequest("Could not find user");
+        var owner = await userRepository.GetUserByUsernameAsync(groupCreateDto.Owner.ToLower());
+        if (owner == null) return BadRequest("Could not find user");
 
-        var group = mapper.Map<Group>(groupCreateDto);
-        group.Owner = user;
+        var group = new Group
+        {
+            GroupName = groupCreateDto.GroupName,
+            ServerName = groupCreateDto.ServerName
+        };
+        group.Owner = owner;
 
         groupRepository.AddGroup(group);
 
         if (!await groupRepository.Complete()) return BadRequest("Failed to create group");
 
-        groupRepository.AddUserToGroup(user.Id, group.Id, false);
+        groupRepository.AddUserToGroup(owner.Id, group.Id, false);
         group.MembersCount++;
 
         if (await groupRepository.Complete()) return Ok(mapper.Map<GroupDto>(group));
