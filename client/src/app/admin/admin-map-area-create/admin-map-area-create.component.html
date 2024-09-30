@@ -1,0 +1,22 @@
+<div class="d-flex align-items-center justify-content-center mt-5">
+    <div class="col-4">
+    <form #registerForm="ngForm" (ngSubmit)="createMapArea()" autocomplete="off">
+        <h2 class="text-center text-primary">Dodaj okolice</h2>
+        <hr>
+        <div class="mb-3 form-floating">
+            <input 
+                type="text"
+                class="form-control"
+                name="name"
+                [(ngModel)]="model.name"
+                placeholder="Nazwa okolicy"
+            >
+            <label>Nazwa okolicy</label>
+        </div>
+
+        <div class="text-center">
+            <button class="btn btn-success me-2" type="submit">Dodaj</button>
+        </div>
+    </form>
+    </div>
+</div>

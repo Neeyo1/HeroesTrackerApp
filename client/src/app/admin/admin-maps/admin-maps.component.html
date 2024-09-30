@@ -1,0 +1,45 @@
+<div class="row">
+    <div class="col-auto me-auto">
+        <button class="btn btn-success" type="button" routerLink="/admin/event/maps/create">Dodaj</button>
+    </div>
+    <div class="col-auto ms-auto">
+        <div class="btn-group" role="group">
+            <button routerLink="/admin/event/heroes" type="button" class="btn btn-dark btn-sm">
+                Herosi
+            </button>
+            <button routerLink="/admin/event/map-areas" type="button" class="btn btn-dark btn-sm">
+                Okolice map
+            </button>
+            <button routerLink="/admin/event/maps" type="button" class="btn btn-dark btn-sm" disabled>
+                Mapy
+            </button>
+        </div>
+
+    </div>
+</div>
+<div class="row">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th scope="col" class="col-6">Nazwa mapy</th>
+                <th scope="col" class="col-2">Id herosa</th>
+                <th scope="col" class="col-2">Id okolicy</th>
+                <th scope="col" class="col-2">Akcja</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (map of adminService.maps(); track map.id) {
+            <tr class="align-middle">
+                <td>{{map.name}}</td>
+                <td>{{map.heroId}}</td>
+                <td>{{map.mapAreaId}}</td>
+                <td>
+                    <button class="btn btn-danger btn-sm" (click)="deleteMap(map.id)">
+                        <i class="fa-solid fa-trash fa-sm"></i>
+                    </button>
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>
