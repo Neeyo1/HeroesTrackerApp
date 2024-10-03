@@ -26,6 +26,15 @@ export class AppComponent implements OnInit{
     const userString = localStorage.getItem("user");
     if (!userString) return;
     const user = JSON.parse(userString);
+    if (this.tokenExpired(user.token)){
+      localStorage.removeItem("user");
+      return;
+    }
     this.accountService.setCurrentUser(user);
+  }
+
+  private tokenExpired(token: string) {
+    const expiry = (JSON.parse(atob(token.split('.')[1]))).exp;
+    return (Math.floor((new Date).getTime() / 1000)) >= expiry;
   }
 }

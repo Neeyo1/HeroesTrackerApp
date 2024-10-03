@@ -16,6 +16,7 @@ import { AdminMapsComponent } from './admin/admin-maps/admin-maps.component';
 import { AdminHeroCreateComponent } from './admin/admin-hero-create/admin-hero-create.component';
 import { AdminMapAreaCreateComponent } from './admin/admin-map-area-create/admin-map-area-create.component';
 import { AdminMapCreateComponent } from './admin/admin-map-create/admin-map-create.component';
+import { adminGuard } from './_guards/admin.guard';
 
 export const routes: Routes = [
     {path: '', component: HomeComponent},
@@ -28,6 +29,13 @@ export const routes: Routes = [
             {path: 'groups/:id', component: GroupDetailComponent},
             {path: 'groups/:id/timers', component: GroupTimersComponent},
             {path: 'groups/:id/members', component: GroupMembersComponent},
+        ]
+    },
+    {
+        path: '',
+        runGuardsAndResolvers: 'always',
+        canActivate: [authGuard, adminGuard],
+        children: [
             {path: 'admin/groups', component: AdminGroupsComponent},
             {path: 'admin/group/create', component: AdminGroupCreateComponent},
             {path: 'admin/event/heroes', component: AdminHeroesComponent},
