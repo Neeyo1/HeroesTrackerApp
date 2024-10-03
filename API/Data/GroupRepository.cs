@@ -1,5 +1,6 @@
 using API.DTOs;
 using API.Entities;
+using API.Helpers;
 using API.Interfaces;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
@@ -33,20 +34,73 @@ public class GroupRepository(DataContext context, IMapper mapper) : IGroupReposi
             .FirstOrDefaultAsync(x => x.ServerName == serverName);
     }
 
-    public async Task<IEnumerable<GroupDto>> GetGroupsAsync()
+    public async Task<PagedList<GroupDto>> GetGroupsAsync(GroupParams groupParams)
     {
-        return await context.Groups
-            .ProjectTo<GroupDto>(mapper.ConfigurationProvider)
-            .ToListAsync();
+        var query = context.Groups.AsQueryable();
+
+        if (groupParams.GroupName != null)
+        {
+            query = query.Where(x => x.GroupName == groupParams.GroupName);
+        }
+        if (groupParams.ServerName != null)
+        {
+            query = query.Where(x => x.ServerName == groupParams.ServerName);
+        }
+        if (groupParams.Owner != null)
+        {
+            query = query.Where(x => x.Owner.UserName == groupParams.Owner);
+        }
+        query = query.Where(x => x.MembersCount >= groupParams.MinMembers 
+            && x.MembersCount <= groupParams.MaxMembers);
+
+        query = groupParams.OrderBy switch
+        {
+            "oldest" => query.OrderByDescending(x => x.CreatedAt),
+            "newest" => query.OrderBy(x => x.CreatedAt),
+            "members" => query.OrderBy(x => x.MembersCount),
+            "membersDesc" => query.OrderByDescending(x => x.MembersCount),
+            _ => query.OrderByDescending(x => x.CreatedAt),
+        };
+
+        return await PagedList<GroupDto>.CreateAsync(
+            query.ProjectTo<GroupDto>(mapper.ConfigurationProvider), 
+            groupParams.PageNumber, groupParams.PageSize);
     }
 
-    public async Task<IEnumerable<GroupDto>> GetMyGroupsAsync(int userId)
-    {
-        return await context.UserGroups
+    public async Task<PagedList<GroupDto>> GetMyGroupsAsync(int userId, GroupParams groupParams)
+    {  
+        var query = context.UserGroups
             .Where(x => x.UserId == userId)
             .Select(x => x.Group)
-            .ProjectTo<GroupDto>(mapper.ConfigurationProvider)
-            .ToListAsync();
+            .AsQueryable();
+
+        if (groupParams.GroupName != null)
+        {
+            query = query.Where(x => x.GroupName == groupParams.GroupName);
+        }
+        if (groupParams.ServerName != null)
+        {
+            query = query.Where(x => x.ServerName == groupParams.ServerName);
+        }
+        if (groupParams.Owner != null)
+        {
+            query = query.Where(x => x.Owner.UserName == groupParams.Owner);
+        }
+        query = query.Where(x => x.MembersCount >= groupParams.MinMembers 
+            && x.MembersCount <= groupParams.MaxMembers);
+
+        query = groupParams.OrderBy switch
+        {
+            "oldest" => query.OrderByDescending(x => x.CreatedAt),
+            "newest" => query.OrderBy(x => x.CreatedAt),
+            "members" => query.OrderBy(x => x.MembersCount),
+            "membersDesc" => query.OrderByDescending(x => x.MembersCount),
+            _ => query.OrderByDescending(x => x.CreatedAt),
+        };
+
+        return await PagedList<GroupDto>.CreateAsync(
+            query.ProjectTo<GroupDto>(mapper.ConfigurationProvider), 
+            groupParams.PageNumber, groupParams.PageSize);
     }
 
     public void AddUserToGroup(int userId, int groupId, bool isModerator)

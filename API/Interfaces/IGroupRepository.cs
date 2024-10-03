@@ -1,5 +1,6 @@
 using API.DTOs;
 using API.Entities;
+using API.Helpers;
 
 namespace API.Interfaces;
 
@@ -9,8 +10,8 @@ public interface IGroupRepository
     void DeleteGroup(Group group);
     Task<Group?> GetGroupAsync(int groupId);
     Task<Group?> GetGroupByGroupNameAndServerNameAsync(string groupName, string serverName);
-    Task<IEnumerable<GroupDto>> GetGroupsAsync();
-    Task<IEnumerable<GroupDto>> GetMyGroupsAsync(int userId);
+    Task<PagedList<GroupDto>> GetGroupsAsync(GroupParams groupParams);
+    Task<PagedList<GroupDto>> GetMyGroupsAsync(int userId, GroupParams groupParams);
     void AddUserToGroup(int userId, int groupId, bool isModerator);
     void RemoveUserFromGroup(UserGroup userGroup);
     Task<UserGroup?> GetUserGroupAsync(int userId, int groupId);

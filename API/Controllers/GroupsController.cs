@@ -1,6 +1,7 @@
 using API.DTOs;
 using API.Entities;
 using API.Extensions;
+using API.Helpers;
 using API.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -16,23 +17,22 @@ public class GroupsController(IGroupRepository groupRepository, IUserRepository 
 {
     [Authorize(Policy = "RequireModeratorRole")]
     [HttpGet("all")]
-    public async Task<ActionResult<IEnumerable<GroupDto>>> GetGroups()
+    public async Task<ActionResult<IEnumerable<GroupDto>>> GetGroups([FromQuery] GroupParams groupParams)
     {
-        var groups = await groupRepository.GetGroupsAsync();
+        var groups = await groupRepository.GetGroupsAsync(groupParams);
+        groups.ForEach(async x => x.Members = await groupRepository.GetGroupMembersAsync(x.Id));
+        Response.AddPaginationHeader(groups);
         return Ok(groups);
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<GroupDto>>> GetMyGroups()
+    public async Task<ActionResult<IEnumerable<GroupDto>>> GetMyGroups([FromQuery] GroupParams groupParams)
     {
         var user = await userRepository.GetUserByUsernameAsync(User.GetUsername());
         if (user == null) return BadRequest("Could not find user");
 
-        var groups = await groupRepository.GetMyGroupsAsync(user.Id);
-        foreach (var group in groups)
-        {
-            group.Members = await groupRepository.GetGroupMembersAsync(group.Id);
-        }
+        var groups = await groupRepository.GetMyGroupsAsync(user.Id, groupParams);
+        groups.ForEach(async x => x.Members = await groupRepository.GetGroupMembersAsync(x.Id));
         return Ok(groups);
     }
 
