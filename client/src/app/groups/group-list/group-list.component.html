@@ -1,3 +1,74 @@
+<div class="container mt-3">
+  <form #form="ngForm" (ngSubmit)="loadGroups()" class="d-flex mb-3">
+      <div class="d-flex mx-2">
+          <label class="col-form-label">Członkowie od:</label>
+          <input type="number" 
+              class="form-control ms-1" 
+              style="width: 70px;"
+              name="minMembers"
+              [(ngModel)]="groupService.groupParams().minMembers"
+          >
+      </div>
+
+      <div class="d-flex mx-2">
+          <label class="col-form-label">Członkowie do:</label>
+          <input type="number" 
+              class="form-control ms-1" 
+              style="width: 70px;"
+              name="maxMembers"
+              [(ngModel)]="groupService.groupParams().maxMembers"
+          >
+      </div>
+
+      <div class="d-flex mx-2">
+        <label class="col-form-label">Nazwa grupy</label>
+        <input type="text" 
+            class="form-control ms-1" 
+            style="width: 70px;"
+            name="groupName"
+            [(ngModel)]="groupService.groupParams().groupName"
+        >
+      </div>
+
+      <div class="d-flex mx-2">
+        <label class="col-form-label">Nazwa serwera</label>
+        <input type="text" 
+            class="form-control ms-1" 
+            style="width: 70px;"
+            name="serverName"
+            [(ngModel)]="groupService.groupParams().serverName"
+        >
+      </div>
+
+      <div class="d-flex mx-2">
+        <label class="col-form-label">Właściciel</label>
+        <input type="text" 
+            class="form-control ms-1" 
+            style="width: 70px;"
+            name="owner"
+            [(ngModel)]="groupService.groupParams().owner"
+        >
+      </div>
+
+      <div class="d-flex mx-2">
+          <label class="col-form-label">Filtruj po:</label>
+          <select name="orderBy"
+              class="form-select ms-1" 
+              style="width:130px"
+              [(ngModel)]="groupService.groupParams().orderBy"
+          >
+          @for (orderBy of orderByList; track orderBy.value) {
+              <option [value]="orderBy.value">{{orderBy.display}}</option>
+          }
+          </select>
+      </div>
+
+      <button class="btn btn-primary ms-1" type="submit">Filtruj</button>
+      <button (click)="resetFilters()" class="btn btn-info ms-1" type="button">Reset</button>
+
+  </form>
+</div>
+
 <table class="table table-hover">
     <thead>
       <tr>
@@ -8,7 +79,7 @@
       </tr>
     </thead>
     <tbody>
-        @for (group of groupService.groups(); track group.id) {
+        @for (group of groupService.paginatedResult()?.items; track group.id) {
             <tr routerLink="/groups/{{group.id}}">
                 <td>{{group.groupName}}</td>
                 <td>{{group.serverName}}</td>
@@ -18,3 +89,19 @@
         }
     </tbody>
   </table>
+
+@if (groupService.paginatedResult()?.pagination) {
+    <div class="d-flex justify-content-center">
+        <pagination [boundaryLinks]="true" 
+                    [totalItems]="groupService.paginatedResult()?.pagination!.totalItems"
+                    [itemsPerPage]="groupService.paginatedResult()?.pagination!.itemsPerPage"
+                    (pageChanged)="pageChanged($event)"
+                    [(ngModel)]="groupService.paginatedResult()?.pagination!.currentPage"
+                    [maxSize]="10"
+                    previousText="&lsaquo;" 
+                    nextText="&rsaquo;" 
+                    firstText="&laquo;" 
+                    lastText="&raquo;">
+        </pagination>   
+    </div>
+}

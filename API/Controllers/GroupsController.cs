@@ -33,6 +33,7 @@ public class GroupsController(IGroupRepository groupRepository, IUserRepository 
 
         var groups = await groupRepository.GetMyGroupsAsync(user.Id, groupParams);
         groups.ForEach(async x => x.Members = await groupRepository.GetGroupMembersAsync(x.Id));
+        Response.AddPaginationHeader(groups);
         return Ok(groups);
     }
 
