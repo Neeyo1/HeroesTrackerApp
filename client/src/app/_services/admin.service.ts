@@ -8,6 +8,8 @@ import { MapArea } from '../_models/mapArea';
 import { Map } from '../_models/map';
 import { PaginatedResult } from '../_models/pagination';
 import { GroupParams } from '../_models/groupParams';
+import { MemberWithRoles } from '../_models/memberWithRoles';
+import { UserParams } from '../_models/userParams';
 
 @Injectable({
   providedIn: 'root'
@@ -19,12 +21,22 @@ export class AdminService {
   heroes = signal<Hero[]>([]);
   mapAreas = signal<MapArea[]>([]);
   maps = signal<Map[]>([]);
+
   groupCache = new Map();
-  paginatedResult = signal<PaginatedResult<Group[]> | null>(null);
+  userCache = new Map();
+
+  paginatedResultGroup = signal<PaginatedResult<Group[]> | null>(null);
+  paginatedResultUser = signal<PaginatedResult<MemberWithRoles[]> | null>(null);
+
   groupParams = signal<GroupParams>(new GroupParams);
+  userParams = signal<UserParams>(new UserParams);
 
   resetGroupParams(){
     this.groupParams.set(new GroupParams);
+  }
+
+  resetUserParams(){
+    this.userParams.set(new UserParams);
   }
 
   private setPaginationHeaders(pageNumber: number, pageSize: number){
@@ -38,9 +50,16 @@ export class AdminService {
     return params;
   }
 
-  private setPaginatedResponse(response: HttpResponse<Group[]>){
-    this.paginatedResult.set({
+  private setPaginatedResponseGroup(response: HttpResponse<Group[]>){
+    this.paginatedResultGroup.set({
       items: response.body as Group[],
+      pagination: JSON.parse(response.headers.get("pagination")!)
+    })
+  }
+
+  private setPaginatedResponseUser(response: HttpResponse<MemberWithRoles[]>){
+    this.paginatedResultUser.set({
+      items: response.body as MemberWithRoles[],
       pagination: JSON.parse(response.headers.get("pagination")!)
     })
   }
@@ -48,7 +67,7 @@ export class AdminService {
   getGroups(){
     const response = this.groupCache.get(Object.values(this.groupParams()).join('-'));
 
-    if (response) return this.setPaginatedResponse(response);
+    if (response) return this.setPaginatedResponseGroup(response);
     let params = this.setPaginationHeaders(this.groupParams().pageNumber, this.groupParams().pageSize)
 
     if (this.groupParams().groupName) params = params.append("groupName", this.groupParams().groupName as string);
@@ -60,7 +79,7 @@ export class AdminService {
 
     return this.http.get<Group[]>(this.baseUrl + "groups/all", {observe: 'response', params}).subscribe({
       next: response => {
-        this.setPaginatedResponse(response);
+        this.setPaginatedResponseGroup(response);
         this.groupCache.set(Object.values(this.groupParams()).join("-"), response);
       }
     });
@@ -136,5 +155,31 @@ export class AdminService {
     return this.http.post<Map>(this.baseUrl + "maps", model).pipe(
       tap(map => this.maps.update(x => [map, ...x]))
     )
+  }
+
+  getUsers(){
+    const response = this.userCache.get(Object.values(this.userParams()).join('-'));
+
+    if (response) return this.setPaginatedResponseUser(response);
+    let params = this.setPaginationHeaders(this.userParams().pageNumber, this.userParams().pageSize)
+
+    if (this.userParams().knownAs) params = params.append("knownAs", this.userParams().knownAs as string);
+    params = params.append("role", this.userParams().role);
+
+    return this.http.get<MemberWithRoles[]>(this.baseUrl + "admin/users", {observe: 'response', params}).subscribe({
+      next: response => {
+        this.setPaginatedResponseUser(response);
+        this.userCache.set(Object.values(this.userParams()).join("-"), response);
+      }
+    });
+  }
+
+  editUser(username: string, role: string){
+    return this.http.post<MemberWithRoles>(this.baseUrl + `admin/edit-roles/${username}/${role}`, {}).pipe(
+      tap(() => {
+        this.userCache.clear();
+        this.getUsers();
+      })
+    );
   }
 }

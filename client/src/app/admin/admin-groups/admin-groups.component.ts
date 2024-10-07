@@ -22,7 +22,7 @@ export class AdminGroupsComponent implements OnInit{
   ];
 
   ngOnInit(): void {
-    if (!this.adminService.paginatedResult()) this.loadGroups();
+    if (!this.adminService.paginatedResultGroup()) this.loadGroups();
   }
 
   loadGroups(){

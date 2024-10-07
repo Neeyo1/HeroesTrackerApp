@@ -9,6 +9,11 @@
             <li class="nav-item">
                 <a routerLink="/groups" routerLinkActive="active" class="nav-link">Grupy</a>
             </li>
+            @if (accountService.roles().includes('Admin')) {
+              <li class="nav-item">
+                <a routerLink="/admin/users" routerLinkActive="active" class="nav-link">Admin(użytkownicy)</a>
+              </li>
+            }
             @if (accountService.roles().includes('Admin') || accountService.roles().includes('Moderator')) {
               <li class="nav-item">
                 <a routerLink="/admin/groups" routerLinkActive="active" class="nav-link">Admin(grupy)</a>

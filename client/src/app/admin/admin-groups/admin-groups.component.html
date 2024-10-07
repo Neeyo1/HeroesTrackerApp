@@ -82,7 +82,7 @@
       </tr>
     </thead>
     <tbody>
-        @for (group of adminService.paginatedResult()?.items; track group.id) {
+        @for (group of adminService.paginatedResultGroup()?.items; track group.id) {
             <tr>
                 <td>{{group.groupName}}</td>
                 <td>{{group.serverName}}</td>
@@ -100,13 +100,13 @@
     </tbody>
   </table>
 
-  @if (adminService.paginatedResult()?.pagination) {
+  @if (adminService.paginatedResultGroup()?.pagination) {
     <div class="d-flex justify-content-center">
         <pagination [boundaryLinks]="true" 
-                    [totalItems]="adminService.paginatedResult()?.pagination!.totalItems"
-                    [itemsPerPage]="adminService.paginatedResult()?.pagination!.itemsPerPage"
+                    [totalItems]="adminService.paginatedResultGroup()?.pagination!.totalItems"
+                    [itemsPerPage]="adminService.paginatedResultGroup()?.pagination!.itemsPerPage"
                     (pageChanged)="pageChanged($event)"
-                    [(ngModel)]="adminService.paginatedResult()?.pagination!.currentPage"
+                    [(ngModel)]="adminService.paginatedResultGroup()?.pagination!.currentPage"
                     [maxSize]="10"
                     previousText="&lsaquo;" 
                     nextText="&rsaquo;" 
