@@ -30,5 +30,8 @@ public class AutoMapperProfiles : Profile
         CreateMap<MapArea, MapAreaDto>();
         CreateMap<MapAreaCreateDto, MapArea>();
         CreateMap<Hero, TimerHeroDto>();
+        CreateMap<AppUser, MemberWithRolesDto>()
+            .ForMember(x => x.Username, y => y.MapFrom(z => z.UserName))
+            .ForMember(x => x.Roles, y => y.MapFrom(z => z.UserRoles.Select(r => r.Role.Name).ToList()));
     }
 }
