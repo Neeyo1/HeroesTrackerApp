@@ -31,11 +31,11 @@
         </div>
 
         <div class="d-flex col-1">
-            <button class="btn btn-primary" style="width: 100px;" type="submit">Filtruj</button>
+            <button class="btn btn-dark" style="width: 100px;" type="submit">Filtruj</button>
         </div>
 
         <div class="d-flex ms-2 col-1">
-            <button (click)="resetFilters()" class="btn btn-info" style="width: 100px;" type="button">Reset</button>
+            <button (click)="resetFilters()" class="btn btn-dark" style="width: 100px;" type="button">Reset</button>
         </div>
 
         <div class="f-flex col-12" style="height: 10px;"></div>
@@ -109,7 +109,8 @@
                     previousText="&lsaquo;" 
                     nextText="&rsaquo;" 
                     firstText="&laquo;" 
-                    lastText="&raquo;">
+                    lastText="&raquo;"
+                    class="my-pagination">
         </pagination>   
     </div>
 }

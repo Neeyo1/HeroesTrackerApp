@@ -1,7 +1,3 @@
-@if (!group()) {
-    Nothing to display
-}
-
 @if (group()) {
     <div class="row">
         <div class="col-auto me-auto">
@@ -14,7 +10,7 @@
                         [(ngModel)]="model.username"
                         placeholder="Nazwa użytkownika"
                     >
-                    <button class="btn btn-success" type="submit">Dodaj</button>
+                    <button class="btn btn-dark" type="submit">Dodaj</button>
                 </div>
             </form>
         </div>
