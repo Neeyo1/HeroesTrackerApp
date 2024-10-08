@@ -8,7 +8,7 @@ public class Group
     public int Id { get; set; }
     public required string GroupName { get; set; }
     public required string ServerName { get; set; }
-    public DateTime CreatedAt { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public int MembersCount { get; set; }
 
     //Group - AppUser (Members)
