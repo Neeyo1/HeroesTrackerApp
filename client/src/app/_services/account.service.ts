@@ -43,6 +43,17 @@ export class AccountService {
     )
   }
 
+  editProfile(model: any){
+    return this.http.put<User>(this.baseUrl + "account/edit", model).pipe(
+      map(user => {
+        if (user){
+          this.setCurrentUser(user);
+        }
+        return user;
+      })
+    )
+  }
+
   logout(){
     localStorage.removeItem("user");
     this.currentUser.set(null);

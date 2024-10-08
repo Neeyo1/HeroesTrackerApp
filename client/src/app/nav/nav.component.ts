@@ -32,4 +32,8 @@ export class NavComponent {
     this.router.navigateByUrl("/");
   }
 
+  editProfile(){
+    this.router.navigateByUrl("/profile/edit");
+  }
+
 }

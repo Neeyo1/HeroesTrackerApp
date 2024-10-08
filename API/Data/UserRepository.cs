@@ -26,4 +26,9 @@ public class UserRepository(DataContext context, IMapper mapper) : IUserReposito
             .ProjectTo<MemberDto>(mapper.ConfigurationProvider)
             .ToListAsync();
     }
+
+    public async Task<bool> Complete()
+    {
+        return await context.SaveChangesAsync() > 0;
+    }
 }

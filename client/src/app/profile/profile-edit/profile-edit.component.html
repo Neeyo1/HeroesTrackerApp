@@ -1,0 +1,22 @@
+<div class="d-flex align-items-center justify-content-center mt-5">
+    <div class="col-4">
+    <form #registerForm="ngForm" (ngSubmit)="editProfile()" autocomplete="off">
+        <h2 class="text-center text-primary">Edytuj profil</h2>
+        <hr>
+        <div class="mb-3 form-floating">
+            <input 
+                type="text"
+                class="form-control"
+                name="knownAs"
+                [(ngModel)]="model.knownAs"
+                placeholder="Pseudonim"
+            >
+            <label>Pseudonim</label>
+        </div>
+
+        <div class="text-center">
+            <button class="btn btn-success me-2" type="submit">Edytuj</button>
+        </div>
+    </form>
+    </div>
+</div>

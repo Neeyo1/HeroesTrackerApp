@@ -33,7 +33,7 @@
             <div dropdown class="dropdown">
                 <a dropdownToggle class="dropdown-toggle text-light text-decoration-none">Moje konto</a>
                 <div *dropdownMenu class="dropdown-menu">
-                    <a class="dropdown-item">Edytuj profil</a>
+                    <a class="dropdown-item" (click)="editProfile()">Edytuj profil</a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" (click)="logout()">Wyloguj</a>
                 </div>

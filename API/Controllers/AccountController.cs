@@ -1,5 +1,6 @@
 using API.DTOs;
 using API.Entities;
+using API.Extensions;
 using API.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
@@ -9,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 namespace API.Controllers;
 
 public class AccountController(UserManager<AppUser> userManager, ITokenService tokenService,
-    IMapper mapper) : BaseApiController
+    IMapper mapper, IUserRepository userRepository) : BaseApiController
 {
     [HttpPost("register")]
     public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
@@ -43,6 +44,29 @@ public class AccountController(UserManager<AppUser> userManager, ITokenService t
         userToReturn.Token = await tokenService.CreateToken(user);
 
         return userToReturn;
+    }
+
+    [HttpPut("edit")]
+    public async Task<ActionResult<UserDto>> UserEdit(UserEditDto userEditDto)
+    {
+        var user = await userManager.FindByNameAsync(User.GetUsername());
+        if (user == null) return BadRequest("User not found");
+
+        var userRoles = await userManager.GetRolesAsync(user);
+        if (userRoles.Contains("Admin"))
+            return BadRequest("Cannot change nickname as an admin");
+
+        if (await KnownAsExists(userEditDto.KnownAs)) return BadRequest("Nickname is taken");
+        user.KnownAs = userEditDto.KnownAs;
+
+        if (await userRepository.Complete())
+        {
+            var userToReturn = mapper.Map<UserDto>(user);
+            userToReturn.Token = await tokenService.CreateToken(user);
+
+            return userToReturn;
+        }
+        return BadRequest("Failed to update user");
     }
 
     private async Task<bool> UserExists(string username)
