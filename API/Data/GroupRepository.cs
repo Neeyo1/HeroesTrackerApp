@@ -91,8 +91,8 @@ public class GroupRepository(DataContext context, IMapper mapper) : IGroupReposi
 
         query = groupParams.OrderBy switch
         {
-            "oldest" => query.OrderByDescending(x => x.CreatedAt),
-            "newest" => query.OrderBy(x => x.CreatedAt),
+            "oldest" => query.OrderBy(x => x.CreatedAt),
+            "newest" => query.OrderByDescending(x => x.CreatedAt),
             "members" => query.OrderBy(x => x.MembersCount),
             "membersDesc" => query.OrderByDescending(x => x.MembersCount),
             _ => query.OrderByDescending(x => x.CreatedAt),
