@@ -30,12 +30,9 @@
             >
         </div>
 
-        <div class="d-flex col-1">
-            <button class="btn btn-dark" style="width: 100px;" type="submit">Filtruj</button>
-        </div>
-
-        <div class="d-flex ms-2 col-1">
-            <button (click)="resetFilters()" class="btn btn-dark" style="width: 100px;" type="button">Reset</button>
+        <div class="d-flex col-2">
+            <button class="btn btn-dark" style="width: 70px;" type="submit">Filtruj</button>
+            <button (click)="resetFilters()" class="btn btn-dark ms-1" style="width: 70px;" type="button">Reset</button>
         </div>
 
         <div class="f-flex col-12" style="height: 10px;"></div>
@@ -72,8 +69,24 @@
             }
             </select>
         </div>
-        <div class="d-flex ms-1 col-2">
-            <button class="btn btn-dark" style="width: 200px" type="button" routerLink="/admin/group/create">Dodaj grupę</button>
+        <div class="d-flex col-2">
+            <button class="btn btn-dark" style="width: 70px" type="button" routerLink="/admin/group/create">Dodaj</button>
+            <button class="btn btn-dark ms-1"
+                    style="width: 50px" 
+                    type="button" 
+                    (click)="addTimersForAll()"
+                    tooltip="Dodaj timery"
+            >
+                <i class="fa-solid fa-plus"></i>
+            </button>
+            <button class="btn btn-dark ms-1"
+                    style="width: 50px" 
+                    type="button" 
+                    (click)="deleteTimersForAll()"
+                    tooltip="Usuń timery"
+            >
+                <i class="fa-solid fa-minus"></i>
+            </button>
         </div>
   </form>
 </div>
@@ -81,12 +94,12 @@
 <table class="table table-hover">
     <thead>
       <tr>
-        <th scope="col" class="col-3">Nazwa grupy</th>
+        <th scope="col" class="col-2">Nazwa grupy</th>
         <th scope="col" class="col-2">Serwer</th>
         <th scope="col" class="col-2">Data utworzenia</th>
         <th scope="col" class="col-2">Liczba członków</th>
         <th scope="col" class="col-2">Właściciel</th>
-        <th scope="col" class="col-1">Akcja</th>
+        <th scope="col" class="col-2">Akcja</th>
       </tr>
     </thead>
     <tbody>
@@ -98,10 +111,23 @@
                 <td>{{group.membersCount}}</td>
                 <td>{{group.owner.knownAs}}</td>
                 <td>
-                    <button class="btn btn-danger btn-sm" 
+                    <button class="btn btn-danger btn-sm me-1" 
                             (click)="deleteGroup(group.id)"
+                            tooltip="Usuń grupę"
                     >
                         <i class="fa-solid fa-trash fa-sm"></i>
+                    </button>
+                    <button class="btn btn-dark btn-sm me-1" 
+                            (click)="addTimersForGroup(group.id)"
+                            tooltip="Dodaj timery"
+                    >
+                        <i class="fa-solid fa-plus fa-sm"></i>
+                    </button>
+                    <button class="btn btn-dark btn-sm" 
+                            (click)="deleteTimersForGroup(group.id)"
+                            tooltip="Usuń timery"
+                    >
+                        <i class="fa-solid fa-minus fa-sm"></i>
                     </button>
                 </td>
             </tr>

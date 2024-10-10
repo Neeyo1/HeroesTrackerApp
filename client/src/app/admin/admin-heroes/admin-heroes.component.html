@@ -32,7 +32,10 @@
                 <td>{{hero.name}}</td>
                 <td>{{hero.level}}</td>
                 <td>
-                    <button class="btn btn-danger btn-sm" (click)="deleteHero(hero.id)">
+                    <button class="btn btn-danger btn-sm"
+                            (click)="deleteHero(hero.id)"
+                            tooltip="Usuń herosa"
+                    >
                         <i class="fa-solid fa-trash fa-sm"></i>
                     </button>
                 </td>

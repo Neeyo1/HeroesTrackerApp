@@ -33,10 +33,10 @@
     <thead>
       <tr>
         <th scope="col" class="col-1">Id</th>
-        <th scope="col" class="col-4">Użytkownik</th>
-        <th scope="col" class="col-4">Pseudonim</th>
-        <th scope="col" class="col-2">Role</th>
-        <th scope="col" class="col-1">Akcja</th>
+        <th scope="col" class="col-3">Użytkownik</th>
+        <th scope="col" class="col-3">Pseudonim</th>
+        <th scope="col" class="col-3">Role</th>
+        <th scope="col" class="col-2">Akcja</th>
       </tr>
     </thead>
     <tbody>
@@ -52,14 +52,16 @@
                             <i class="fa-solid fa-crown fa-sm"></i>
                         </button>
                     } @else if (user.roles.includes("Moderator")) {
-                        <button class="btn btn-dark btn-sm" 
+                        <button class="btn btn-dark btn-sm me-1" 
                                 (click)="editUser(user.username, 'false')"
+                                tooltip="Usuń rangę moderatora"
                         >
                             <i class="fa-solid fa-angles-down fa-sm"></i>
                         </button>
                     } @else if (!user.roles.includes("Moderator")) {
-                        <button class="btn btn-dark btn-sm" 
+                        <button class="btn btn-dark btn-sm me-1" 
                                 (click)="editUser(user.username, 'true')"
+                                tooltip="Dodaj rangę moderatora"
                         >
                             <i class="fa-solid fa-angles-up fa-sm"></i>
                         </button>

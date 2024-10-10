@@ -182,4 +182,20 @@ export class AdminService {
       })
     );
   }
+
+  addTimersForAll(){
+    return this.http.post(this.baseUrl + "groups/all/maps/all", {});
+  }
+
+  deleteTimersForAll(){
+    return this.http.delete(this.baseUrl + "groups/all/maps");
+  }
+
+  addTimersForGroup(groupId: number){
+    return this.http.post(this.baseUrl + `groups/${groupId}/maps/all`, {});
+  }
+
+  deleteTimersForGroup(groupId: number){
+    return this.http.delete(this.baseUrl + `groups/${groupId}/maps`);
+  }
 }

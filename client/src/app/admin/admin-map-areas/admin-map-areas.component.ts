@@ -1,11 +1,12 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { AdminService } from '../../_services/admin.service';
 import { RouterLink } from '@angular/router';
+import { TooltipModule } from 'ngx-bootstrap/tooltip';
 
 @Component({
   selector: 'app-admin-map-areas',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, TooltipModule],
   templateUrl: './admin-map-areas.component.html',
   styleUrl: './admin-map-areas.component.css'
 })

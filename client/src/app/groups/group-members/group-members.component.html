@@ -69,22 +69,25 @@
                         }
                         @else {
                             @if (role == "owner" || (role == "moderator" && member.isModerator == false)){
-                                <button class="btn btn-danger btn-sm" 
+                                <button class="btn btn-danger btn-sm me-1" 
                                         (click)="removeMember(member.username)"
+                                        tooltip="Usuń członka grupy"
                                 >
                                     <i class="fa-solid fa-trash fa-sm"></i>
                                 </button>
                             }
                             @if (role == "owner") {
                                 @if (member.isModerator) {
-                                    <button class="btn btn-dark btn-sm" 
+                                    <button class="btn btn-dark btn-sm me-1" 
                                             (click)="removeModerator(member.username)"
+                                            tooltip="Usuń rangę moderatora grupy"
                                     >
                                         <i class="fa-solid fa-angles-down fa-sm"></i>
                                     </button>
                                 } @else {
-                                    <button class="btn btn-dark btn-sm" 
+                                    <button class="btn btn-dark btn-sm me-1" 
                                             (click)="addModerator(member.username)"
+                                            tooltip="Dodaj rangę moderatora grupy"
                                     >
                                         <i class="fa-solid fa-angles-up fa-sm"></i>
                                     </button>

@@ -4,11 +4,12 @@ import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { FormsModule } from '@angular/forms';
 import { PaginationModule } from 'ngx-bootstrap/pagination';
+import { TooltipModule } from 'ngx-bootstrap/tooltip';
 
 @Component({
   selector: 'app-admin-user-list',
   standalone: true,
-  imports: [FormsModule, PaginationModule],
+  imports: [FormsModule, PaginationModule, TooltipModule],
   templateUrl: './admin-user-list.component.html',
   styleUrl: './admin-user-list.component.css'
 })

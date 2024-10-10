@@ -6,11 +6,12 @@ import { GroupMember } from '../../_models/groupMember';
 import { AccountService } from '../../_services/account.service';
 import { FormsModule } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
+import { TooltipModule } from 'ngx-bootstrap/tooltip';
 
 @Component({
   selector: 'app-group-members',
   standalone: true,
-  imports: [RouterLink, FormsModule],
+  imports: [RouterLink, FormsModule, TooltipModule],
   templateUrl: './group-members.component.html',
   styleUrl: './group-members.component.css'
 })

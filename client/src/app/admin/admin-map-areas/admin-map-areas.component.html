@@ -30,7 +30,10 @@
             <tr class="align-middle">
                 <td>{{mapArea.name}}</td>
                 <td>
-                    <button class="btn btn-danger btn-sm" (click)="deleteMapArea(mapArea.id)">
+                    <button class="btn btn-danger btn-sm"
+                            (click)="deleteMapArea(mapArea.id)"
+                            tooltip="Usuń okolice map"
+                    >
                         <i class="fa-solid fa-trash fa-sm"></i>
                     </button>
                 </td>
