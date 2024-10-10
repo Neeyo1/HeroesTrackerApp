@@ -259,7 +259,7 @@ public class GroupsController(IGroupRepository groupRepository, IUserRepository 
 
     [Authorize(Policy = "RequireModeratorRole")]
     [HttpPost("{groupId}/maps/{mapId}")]
-    public async Task<ActionResult<GroupMapDto>> CreateGroupMap(int groupId, int mapId)
+    public async Task<ActionResult<GroupMapDto>> CreateGroupMapForGroup(int groupId, int mapId)
     {
         var groupMap = new GroupMap
         {
@@ -272,6 +272,56 @@ public class GroupsController(IGroupRepository groupRepository, IUserRepository 
 
         if (await groupRepository.Complete()) return NoContent();
         return BadRequest("Failed to add groupmap");
+    }
+
+    [Authorize(Policy = "RequireModeratorRole")]
+    [HttpPost("{groupId}/maps/all")]
+    public async Task<ActionResult<GroupMapDto>> CreateGroupMapsForGroup(int groupId)
+    {
+        var maps = await mapRepository.GetMapsAsync();
+        foreach (var map in maps)
+        {
+            if (await groupMapRepository.GetGroupMapAsync(groupId, map.Id) == null)
+            {
+                var groupMap = new GroupMap
+                {
+                    GroupId = groupId,
+                    MapId = map.Id,
+                    UpdatedBy = "(system)"
+                };
+                groupMapRepository.AddGroupMap(groupMap);
+            }
+        }
+
+        if (await groupRepository.Complete()) return NoContent();
+        return BadRequest("Failed to add groupmaps");
+    }
+
+    [Authorize(Policy = "RequireModeratorRole")]
+    [HttpPost("all/maps/all")]
+    public async Task<ActionResult<GroupMapDto>> CreateGroupMapsForAll()
+    {
+        var groups = await groupRepository.GetAllGroupsAsync();
+        var maps = await mapRepository.GetMapsAsync();
+        foreach (var group in groups)
+        {
+            foreach (var map in maps)
+            {
+                if (await groupMapRepository.GetGroupMapAsync(group.Id, map.Id) == null)
+                {
+                    var groupMap = new GroupMap
+                    {
+                        GroupId = group.Id,
+                        MapId = map.Id,
+                        UpdatedBy = "(system)"
+                    };
+                    groupMapRepository.AddGroupMap(groupMap);
+                }
+            }
+        }
+
+        if (await groupRepository.Complete()) return NoContent();
+        return BadRequest("Failed to add all groupmaps");
     }
 
     [HttpPut("{groupId}/maps/{mapId}")]
@@ -291,6 +341,38 @@ public class GroupsController(IGroupRepository groupRepository, IUserRepository 
 
         if (await groupRepository.Complete()) return NoContent();
         return BadRequest("Failed to edit groupmap");
+    }
+
+    [Authorize(Policy = "RequireModeratorRole")]
+    [HttpDelete("{groupId}/maps")]
+    public async Task<ActionResult<GroupMapDto>> DeleteGroupMapsForGroup(int groupId)
+    {
+        var groupMaps = await groupMapRepository.GetGroupMapsRawAsync(groupId);
+        foreach (var groupMap in groupMaps)
+        {
+            groupMapRepository.DeleteGroupMap(groupMap);
+        }
+
+        if (await groupRepository.Complete()) return NoContent();
+        return BadRequest("Failed to delete all groupmaps for group");
+    }
+
+    [Authorize(Policy = "RequireModeratorRole")]
+    [HttpDelete("all/maps")]
+    public async Task<ActionResult<GroupMapDto>> DeleteGroupMapsForAll()
+    {
+        var groups = await groupRepository.GetAllGroupsAsync();
+        foreach (var group in groups)
+        {
+            var groupMaps = await groupMapRepository.GetGroupMapsRawAsync(group.Id);
+            foreach (var groupMap in groupMaps)
+            {
+                groupMapRepository.DeleteGroupMap(groupMap);
+            }
+        }
+        
+        if (await groupRepository.Complete()) return NoContent();
+        return BadRequest("Failed to delete all groupmaps for all groups");
     }
 
     private async Task<bool> IsUserInGroup(int userId, int groupId)

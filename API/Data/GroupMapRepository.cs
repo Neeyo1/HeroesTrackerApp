@@ -35,4 +35,16 @@ public class GroupMapRepository(DataContext context, IMapper mapper) : IGroupMap
             .ProjectTo<GroupMapDto>(mapper.ConfigurationProvider)
             .ToListAsync();
     }
+
+    public async Task<IEnumerable<GroupMap>> GetGroupMapsRawAsync(int groupId)
+    {
+        return await context.GroupMaps
+            .Where(x => x.GroupId == groupId)
+            .ToListAsync();
+    }
+
+    public void DeleteGroupMap(GroupMap groupMap)
+    {
+        context.GroupMaps.Remove(groupMap);
+    }
 }

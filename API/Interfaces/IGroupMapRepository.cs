@@ -9,4 +9,6 @@ public interface IGroupMapRepository
     Task<GroupMap?> GetGroupMapAsync(int groupId, int mapId);
     Task<GroupMap?> GetGroupMapByMapNameAsync(int groupId, string mapName);
     Task<IEnumerable<GroupMapDto>> GetGroupMapsAsync(int groupId);
+    Task<IEnumerable<GroupMap>> GetGroupMapsRawAsync(int groupId);
+    void DeleteGroupMap(GroupMap groupMap);
 }

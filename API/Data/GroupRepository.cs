@@ -103,6 +103,13 @@ public class GroupRepository(DataContext context, IMapper mapper) : IGroupReposi
             groupParams.PageNumber, groupParams.PageSize);
     }
 
+    public async Task<IEnumerable<GroupDto>> GetAllGroupsAsync()
+    {
+        return await context.Groups
+            .ProjectTo<GroupDto>(mapper.ConfigurationProvider)
+            .ToListAsync();
+    }
+
     public void AddUserToGroup(int userId, int groupId, bool isModerator)
     {
         var userGroup = new UserGroup

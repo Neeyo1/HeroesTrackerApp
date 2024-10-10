@@ -11,6 +11,7 @@ public interface IGroupRepository
     Task<Group?> GetGroupAsync(int groupId);
     Task<Group?> GetGroupByGroupNameAndServerNameAsync(string groupName, string serverName);
     Task<PagedList<GroupDto>> GetGroupsAsync(GroupParams groupParams);
+    Task<IEnumerable<GroupDto>> GetAllGroupsAsync();
     Task<PagedList<GroupDto>> GetMyGroupsAsync(int userId, GroupParams groupParams);
     void AddUserToGroup(int userId, int groupId, bool isModerator);
     void RemoveUserFromGroup(UserGroup userGroup);
