@@ -1,0 +1,4 @@
+accordion-group::ng-deep .btn-link{
+    text-decoration: none;
+    color: black;
+}
