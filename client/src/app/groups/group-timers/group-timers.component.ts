@@ -5,11 +5,12 @@ import { Group } from '../../_models/group';
 import { Timer } from '../../_models/timer';
 import { TimerService } from '../../_services/timer.service';
 import { TimeagoModule } from 'ngx-timeago';
+import { AlertModule } from 'ngx-bootstrap/alert';
 
 @Component({
   selector: 'app-group-timers',
   standalone: true,
-  imports: [RouterLink, TimeagoModule],
+  imports: [RouterLink, TimeagoModule, AlertModule],
   templateUrl: './group-timers.component.html',
   styleUrl: './group-timers.component.css'
 })
@@ -21,7 +22,8 @@ export class GroupTimersComponent implements OnInit{
 
   ngOnInit(): void {
     this.loadGroup();
-    if (this.timerService.timers().length == 0) this.loadTimers();
+    //if (this.timerService.timers().length == 0) this.loadTimers();
+    this.loadTimers()
   }
 
   loadGroup(){

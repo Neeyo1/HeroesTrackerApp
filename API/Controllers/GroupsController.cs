@@ -136,12 +136,12 @@ public class GroupsController(IGroupRepository groupRepository, IUserRepository 
     }
 
     [HttpPut("members/{groupId}")]
-    public async Task<ActionResult<IEnumerable<MemberDto>>> AddOrRemoveMemberForGroup(int groupId, [FromQuery]string userToEditUsername, string? isMod)
+    public async Task<ActionResult<IEnumerable<MemberDto>>> AddOrRemoveMemberForGroup(int groupId, [FromQuery]string userToEditKnownAs, string? isMod)
     {
         var user = await userRepository.GetUserByUsernameAsync(User.GetUsername());
         if (user == null) return BadRequest("Could not find user");
 
-        var userToEdit = await userRepository.GetUserByUsernameAsync(userToEditUsername);
+        var userToEdit = await userRepository.GetUserByKnownAsAsync(userToEditKnownAs);
         if (userToEdit == null) return BadRequest("Could not find user to edit");
 
         var group = await groupRepository.GetGroupAsync(groupId);
@@ -189,12 +189,12 @@ public class GroupsController(IGroupRepository groupRepository, IUserRepository 
     }
 
     [HttpPut("moderators/{groupId}")]
-    public async Task<ActionResult<IEnumerable<MemberDto>>> AddOrRemoveModeratorForGroup(int groupId, [FromQuery]string userToEditUsername, string mod)
+    public async Task<ActionResult<IEnumerable<MemberDto>>> AddOrRemoveModeratorForGroup(int groupId, [FromQuery]int userToEditId, string mod)
     {
         var user = await userRepository.GetUserByUsernameAsync(User.GetUsername());
         if (user == null) return BadRequest("Could not find user");
 
-        var userToEdit = await userRepository.GetUserByUsernameAsync(userToEditUsername);
+        var userToEdit = await userRepository.GetUserByIdAsync(userToEditId);
         if (userToEdit == null) return BadRequest("Could not find user to edit");
 
         var group = await groupRepository.GetGroupAsync(groupId);

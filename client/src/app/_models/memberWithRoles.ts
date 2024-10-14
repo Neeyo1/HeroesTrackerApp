@@ -1,6 +1,6 @@
 export interface MemberWithRoles {
     id: number;
-    username: string;
+    //username: string;
     knownAs: string;
     roles: string[];
 }

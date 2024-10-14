@@ -31,8 +31,8 @@ export class AdminUserListComponent implements OnInit{
     this.adminService.getUsers();
   }
 
-  editUser(username: string, role: string){
-    this.adminService.editUser(username, role).subscribe({
+  editUser(userId: number, role: string){
+    this.adminService.editUser(userId, role).subscribe({
       next: _ => {},
       error: error => this.toastrService.error(error.error)
     })

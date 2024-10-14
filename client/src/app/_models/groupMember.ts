@@ -1,6 +1,6 @@
 export interface GroupMember {
     id: number;
-    username: string;
+    //username: string;
     knownAs: string;
     isModerator: boolean;
 }

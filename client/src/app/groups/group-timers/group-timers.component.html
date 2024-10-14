@@ -1,7 +1,3 @@
-@if (!group()) {
-    Nothing to display
-}
-
 @if (group()) {
     <div class="row">
         <div class="col-auto ms-auto">
@@ -28,6 +24,18 @@
             </div>
             
         </div>
+    </div>
+    <div class="row mt-2">
+        <alert type="danger">
+            Na chwilę obecną dane nie są synchornizowane z serwerem, odśwież stronę, przełącz się 
+            między zakładkami w aplikacji lub kliknij 
+            <a class="text-decoration-none" 
+               style="cursor: pointer;" 
+               (click)="loadTimers()"
+            >
+                TUTAJ ABY ODSWIEŻYĆ DANE
+            </a>
+        </alert>
     </div>
     <div class="row">
         <table class="table table-hover">

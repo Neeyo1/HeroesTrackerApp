@@ -1,7 +1,7 @@
 <div class="container mt-3">
     <form #form="ngForm" (ngSubmit)="loadUsers()" class="d-flex mb-3">
         <div class="d-flex mx-2">
-          <label class="col-form-label">Pseudonim</label>
+          <label class="col-form-label">Użytkownik</label>
           <input type="text" 
               class="form-control ms-1" 
               style="width: 170px;"
@@ -32,10 +32,9 @@
 <table class="table table-hover">
     <thead>
       <tr>
-        <th scope="col" class="col-1">Id</th>
-        <th scope="col" class="col-3">Użytkownik</th>
-        <th scope="col" class="col-3">Pseudonim</th>
-        <th scope="col" class="col-3">Role</th>
+        <th scope="col" class="col-2">Id</th>
+        <th scope="col" class="col-4">Użytkownik</th>
+        <th scope="col" class="col-4">Role</th>
         <th scope="col" class="col-2">Akcja</th>
       </tr>
     </thead>
@@ -43,7 +42,6 @@
         @for (user of adminService.paginatedResultUser()?.items; track user.id) {
             <tr>
                 <td>{{user.id}}</td>
-                <td>{{user.username}}</td>
                 <td>{{user.knownAs}}</td>
                 <td>{{user.roles}}</td>
                 <td>
@@ -53,14 +51,14 @@
                         </button>
                     } @else if (user.roles.includes("Moderator")) {
                         <button class="btn btn-dark btn-sm me-1" 
-                                (click)="editUser(user.username, 'false')"
+                                (click)="editUser(user.id, 'false')"
                                 tooltip="Usuń rangę moderatora"
                         >
                             <i class="fa-solid fa-angles-down fa-sm"></i>
                         </button>
                     } @else if (!user.roles.includes("Moderator")) {
                         <button class="btn btn-dark btn-sm me-1" 
-                                (click)="editUser(user.username, 'true')"
+                                (click)="editUser(user.id, 'true')"
                                 tooltip="Dodaj rangę moderatora"
                         >
                             <i class="fa-solid fa-angles-up fa-sm"></i>

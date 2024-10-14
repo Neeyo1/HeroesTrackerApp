@@ -20,6 +20,12 @@ public class UserRepository(DataContext context, IMapper mapper) : IUserReposito
             .SingleOrDefaultAsync(x => x.UserName == username);
     }
 
+    public async Task<AppUser?> GetUserByKnownAsAsync(string knownAs)
+    {
+        return await context.Users
+            .SingleOrDefaultAsync(x => x.KnownAs == knownAs);
+    }
+
     public async Task<IEnumerable<MemberDto>> GetUsersAsync()
     {
         return await context.Users

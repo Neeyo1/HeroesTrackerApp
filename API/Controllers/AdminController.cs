@@ -19,13 +19,13 @@ public class AdminController(IAdminRepository adminRepository, UserManager<AppUs
         return Ok(users);
     }
 
-    [HttpPost("edit-roles/{username}/{moderator}")]
-    public async Task<ActionResult> EditRoles(string username, string moderator)
+    [HttpPost("edit-roles/{userId}/{moderator}")]
+    public async Task<ActionResult> EditRoles(string userId, string moderator)
     {
         if (moderator != "true" && moderator != "false")
             return BadRequest("Moderator flag has to be set to either true or false");
 
-        var user = await userManager.FindByNameAsync(username);
+        var user = await userManager.FindByIdAsync(userId);
         if (user == null) return BadRequest("User not found");
 
         var userRoles = await userManager.GetRolesAsync(user);

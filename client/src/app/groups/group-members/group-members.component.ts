@@ -57,25 +57,24 @@ export class GroupMembersComponent implements OnInit{
   // }
 
   checkUserRole(){
-    const user = this.groupMembers().find(x => x.username == this.accountService.currentUser()?.username);
+    const user = this.groupMembers().find(x => x.id == this.accountService.currentUser()?.id);
     if (!user) return;
-    if (user.username == this.group()?.owner.username) this.role = "owner";
+    if (user.id == this.group()?.owner.id) this.role = "owner";
     if (user.isModerator == true) this.role = "moderator";
   }
 
   addMember(){
     if (this.group() == null) return;
-    if (this.groupMembers().find(x => x.username == this.model.username)){
+    if (this.groupMembers().find(x => x.knownAs == this.model.knownAs)){
       this.toastr.error("Użytkownik już jest w tej grupie");
       return;
     }
-    this.groupService.addOrRemoveMember(this.model.username, this.group()!.id).subscribe({
+    this.groupService.addOrRemoveMember(this.model.knownAs, this.group()!.id).subscribe({
       next: newMember => {
         if (newMember == null) return;
         this.toastr.success("Użytkownik dodany do grupy");
         const newGroupMember: GroupMember = {
           id: newMember.id,
-          username: newMember.username,
           knownAs: newMember.knownAs,
           isModerator: false
         };
@@ -91,17 +90,17 @@ export class GroupMembersComponent implements OnInit{
     });
   }
 
-  removeMember(username: string){
+  removeMember(userKnownAs: string){
     if (this.group == null) return;
-    if (!this.groupMembers().find(x => x.username == username)){
+    if (!this.groupMembers().find(x => x.knownAs == userKnownAs)){
       this.toastr.error("Użytkownik nie należy do tej grupy");
       return;
     }
-    this.groupService.addOrRemoveMember(username, this.group()!.id).subscribe({
+    this.groupService.addOrRemoveMember(userKnownAs, this.group()!.id).subscribe({
       next: () => {
         this.toastr.success("Użytkownik usunięty z grupy");
         var newGroup: Group = this.group()!;
-        newGroup.members = newGroup.members.filter(x => x.username != username);
+        newGroup.members = newGroup.members.filter(x => x.knownAs != userKnownAs);
         newGroup.membersCount--;
         this.group.set(newGroup);
         this.groupMembers.set(newGroup.members);
@@ -110,9 +109,9 @@ export class GroupMembersComponent implements OnInit{
     });
   }
 
-  addModerator(username: string){
+  addModerator(userId: number){
     if (this.group() == null) return;
-    var editedMember = this.groupMembers().find(x => x.username == username);
+    var editedMember = this.groupMembers().find(x => x.id == userId);
     if (editedMember == null){
       this.toastr.error("Użytkownik nie należy do tej grupy");
       return;
@@ -121,23 +120,23 @@ export class GroupMembersComponent implements OnInit{
       this.toastr.error("Użytkownik już jest moderatorem");
       return;
     }
-    this.groupService.addOrRemoveModerator(username, this.group()!.id, true).subscribe({
+    this.groupService.addOrRemoveModerator(userId, this.group()!.id, true).subscribe({
       next: () => {
         this.toastr.success("Użytkownik otrzymał rangę moderator");
 
         editedMember!.isModerator = true;
 
         var newGroup: Group = this.group()!;
-        newGroup.members.forEach(x => x.username == username ? editedMember : x)
+        newGroup.members.forEach(x => x.id == userId ? editedMember : x)
         this.group.set(newGroup);
       },
       error: error => this.toastr.error(error.error)
     });
   }
 
-  removeModerator(username: string){
+  removeModerator(userId: number){
     if (this.group() == null) return;
-    var editedMember = this.groupMembers().find(x => x.username == username);
+    var editedMember = this.groupMembers().find(x => x.id == userId);
     if (editedMember == null){
       this.toastr.error("Użytkownik nie należy do tej grupy");
       return;
@@ -146,14 +145,14 @@ export class GroupMembersComponent implements OnInit{
       this.toastr.error("Użytkownik nie jest moderatorem");
       return;
     }
-    this.groupService.addOrRemoveModerator(username, this.group()!.id, false).subscribe({
+    this.groupService.addOrRemoveModerator(userId, this.group()!.id, false).subscribe({
       next: () => {
         this.toastr.success("Użytkownik utracił rangę moderator");
 
         editedMember!.isModerator = false;
 
         var newGroup: Group = this.group()!;
-        newGroup.members.forEach(x => x.username == username ? editedMember : x)
+        newGroup.members.forEach(x => x.id == userId ? editedMember : x)
         this.group.set(newGroup);
       },
       error: error => this.toastr.error(error.error)

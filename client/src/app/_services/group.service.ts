@@ -81,11 +81,11 @@ export class GroupService {
     ));
   }
 
-  addOrRemoveMember(username: string, groupId: number){
-    return this.http.put<Member | null>(this.baseUrl + `groups/members/${groupId}?userToEditUsername=${username}`, {});
+  addOrRemoveMember(userKnowAs: string, groupId: number){
+    return this.http.put<Member | null>(this.baseUrl + `groups/members/${groupId}?userToEditKnownAs=${userKnowAs}`, {});
   }
 
-  addOrRemoveModerator(username: string, groupId: number, isModerator: boolean){
-    return this.http.put(this.baseUrl + `groups/moderators/${groupId}?userToEditUsername=${username}&mod=${isModerator}`, {});
+  addOrRemoveModerator(userId: number, groupId: number, isModerator: boolean){
+    return this.http.put(this.baseUrl + `groups/moderators/${groupId}?userToEditId=${userId}&mod=${isModerator}`, {});
   }
 }

@@ -174,8 +174,8 @@ export class AdminService {
     });
   }
 
-  editUser(username: string, role: string){
-    return this.http.post<MemberWithRoles>(this.baseUrl + `admin/edit-roles/${username}/${role}`, {}).pipe(
+  editUser(userId: number, role: string){
+    return this.http.post<MemberWithRoles>(this.baseUrl + `admin/edit-roles/${userId}/${role}`, {}).pipe(
       tap(() => {
         this.userCache.clear();
         this.getUsers();
