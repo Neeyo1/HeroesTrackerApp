@@ -1,0 +1,44 @@
+<div class="mb-3 form-floating">
+    <input 
+        [class.is-invalid]="control.touched && control.invalid"
+        [type]="type()" 
+        class="form-control" 
+        [formControl]="control"
+        placeholder={{label()}}>
+    <label>{{label()}}</label>
+    @if (control.hasError('required')) {
+        <div class="invalid-feedback text start">
+            Pole jest wymagane
+        </div>
+    }
+    @if (control.hasError('minlength')) {
+        <div class="invalid-feedback text start">
+            {{label()}} musi składać się z minimum {{control.errors?.['minlength'].requiredLength}} znaków
+        </div>
+    }
+    @if (control.hasError('maxlength')) {
+        <div class="invalid-feedback text start">
+            {{label()}} musi składać się z maksimum {{control.errors?.['maxlength'].requiredLength}} znaków
+        </div>
+    }
+    @if (control.hasError('isMatching')) {
+        <div class="invalid-feedback text start">
+            Hasła nie są zgodne
+        </div>
+    }
+    @if (control.hasError('hasNumber')) {
+        <div class="invalid-feedback text start">
+            Hasło musi zawierać cyfrę
+        </div>
+    }
+    @if (control.hasError('hasLowerCase')) {
+        <div class="invalid-feedback text start">
+            Hasło musi zawierać małą literę
+        </div>
+    }
+    @if (control.hasError('hasUpperCase')) {
+        <div class="invalid-feedback text start">
+            Hasło musi zawierać wielką literę
+        </div>
+    }
+</div>
