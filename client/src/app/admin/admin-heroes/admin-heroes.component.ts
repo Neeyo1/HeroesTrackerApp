@@ -3,6 +3,7 @@ import { AdminService } from '../../_services/admin.service';
 import { ToastrService } from 'ngx-toastr';
 import { RouterLink } from '@angular/router';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
+import { ConfirmService } from '../../_services/confirm.service';
 
 @Component({
   selector: 'app-admin-heroes',
@@ -13,6 +14,7 @@ import { TooltipModule } from 'ngx-bootstrap/tooltip';
 })
 export class AdminHeroesComponent implements OnInit{
   adminService = inject(AdminService);
+  private confirmService = inject(ConfirmService);
 
   ngOnInit(): void {
     if (this.adminService.heroes().length == 0) this.loadHeroes();
@@ -23,6 +25,12 @@ export class AdminHeroesComponent implements OnInit{
   }
 
   deleteHero(heroId: number){
-    this.adminService.deleteHero(heroId);
+    this.confirmService.confirm()?.subscribe({
+      next: result => {
+        if (result){
+          this.adminService.deleteHero(heroId);
+        }
+      }
+    })
   }
 }

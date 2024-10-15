@@ -5,6 +5,7 @@ import { ToastrService } from 'ngx-toastr';
 import { FormsModule } from '@angular/forms';
 import { PaginationModule } from 'ngx-bootstrap/pagination';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
+import { ConfirmService } from '../../_services/confirm.service';
 
 @Component({
   selector: 'app-admin-user-list',
@@ -16,6 +17,7 @@ import { TooltipModule } from 'ngx-bootstrap/tooltip';
 export class AdminUserListComponent implements OnInit{
   adminService = inject(AdminService);
   toastrService = inject(ToastrService);
+  private confirmService = inject(ConfirmService);
   roleList = [
     {value: 'all', display: 'Wszyscy'}, 
     {value: 'user', display: 'Użytkownicy'},
@@ -32,9 +34,15 @@ export class AdminUserListComponent implements OnInit{
   }
 
   editUser(userId: number, role: string){
-    this.adminService.editUser(userId, role).subscribe({
-      next: _ => {},
-      error: error => this.toastrService.error(error.error)
+    this.confirmService.confirm()?.subscribe({
+      next: result => {
+        if (result){
+          this.adminService.editUser(userId, role).subscribe({
+            next: _ => {},
+            error: error => this.toastrService.error(error.error)
+          })
+        }
+      }
     })
   }
 

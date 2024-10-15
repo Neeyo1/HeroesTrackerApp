@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { PaginationModule } from 'ngx-bootstrap/pagination';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { ToastrService } from 'ngx-toastr';
+import { ConfirmService } from '../../_services/confirm.service';
 
 @Component({
   selector: 'app-admin-groups',
@@ -17,6 +18,7 @@ export class AdminGroupsComponent implements OnInit{
   adminService = inject(AdminService);
   private router = inject(Router);
   private toastrService = inject(ToastrService);
+  private confirmService = inject(ConfirmService);
   orderByList = [
     {value: 'oldest', display: 'Najstarsze'}, 
     {value: 'newest', display: 'Najnowsze'},
@@ -33,7 +35,13 @@ export class AdminGroupsComponent implements OnInit{
   }
 
   deleteGroup(groupId: number){
-    this.adminService.deleteGroup(groupId);
+    this.confirmService.confirm()?.subscribe({
+      next: result => {
+        if (result){
+          this.adminService.deleteGroup(groupId);
+        }
+      }
+    })
   }
 
   resetFilters(){
@@ -49,30 +57,54 @@ export class AdminGroupsComponent implements OnInit{
   }
 
   addTimersForAll(){
-    this.adminService.addTimersForAll().subscribe({
-      next: () => this.toastrService.success("Dodano timery dla wszystkich grup"),
-      error: error => this.toastrService.error(error.error)
+    this.confirmService.confirm()?.subscribe({
+      next: result => {
+        if (result){
+          this.adminService.addTimersForAll().subscribe({
+            next: () => this.toastrService.success("Dodano timery dla wszystkich grup"),
+            error: error => this.toastrService.error(error.error)
+          })
+        }
+      }
     })
   }
 
   deleteTimersForAll(){
-    this.adminService.deleteTimersForAll().subscribe({
-      next: () => this.toastrService.success("Usunięto timery dla wszystkich grup"),
-      error: error => this.toastrService.error(error.error)
+    this.confirmService.confirm()?.subscribe({
+      next: result => {
+        if (result){
+          this.adminService.deleteTimersForAll().subscribe({
+            next: () => this.toastrService.success("Usunięto timery dla wszystkich grup"),
+            error: error => this.toastrService.error(error.error)
+          })
+        }
+      }
     })
   }
 
   addTimersForGroup(groupId: number){
-    this.adminService.addTimersForGroup(groupId).subscribe({
-      next: () => this.toastrService.success("Dodano timery dla grupy"),
-      error: error => this.toastrService.error(error.error)
+    this.confirmService.confirm()?.subscribe({
+      next: result => {
+        if (result){
+          this.adminService.addTimersForGroup(groupId).subscribe({
+            next: () => this.toastrService.success("Dodano timery dla grupy"),
+            error: error => this.toastrService.error(error.error)
+          })
+        }
+      }
     })
   }
 
   deleteTimersForGroup(groupId: number){
-    this.adminService.deleteTimersForGroup(groupId).subscribe({
-      next: () => this.toastrService.success("Usunięto timery dla grupy"),
-      error: error => this.toastrService.error(error.error)
+    this.confirmService.confirm()?.subscribe({
+      next: result => {
+        if (result){
+          this.adminService.deleteTimersForGroup(groupId).subscribe({
+            next: () => this.toastrService.success("Usunięto timery dla grupy"),
+            error: error => this.toastrService.error(error.error)
+          })
+        }
+      }
     })
   }
 }

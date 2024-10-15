@@ -2,6 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { AdminService } from '../../_services/admin.service';
 import { RouterLink } from '@angular/router';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
+import { ConfirmService } from '../../_services/confirm.service';
 
 @Component({
   selector: 'app-admin-map-areas',
@@ -12,6 +13,7 @@ import { TooltipModule } from 'ngx-bootstrap/tooltip';
 })
 export class AdminMapAreasComponent implements OnInit{
   adminService = inject(AdminService);
+  private confirmService = inject(ConfirmService);
 
   ngOnInit(): void {
     if (this.adminService.mapAreas().length == 0) this.loadMapAreas();
@@ -22,6 +24,12 @@ export class AdminMapAreasComponent implements OnInit{
   }
 
   deleteMapArea(mapAreaId: number){
-    this.adminService.deleteMapArea(mapAreaId);
+    this.confirmService.confirm()?.subscribe({
+      next: result => {
+        if (result){
+          this.adminService.deleteMapArea(mapAreaId);
+        }
+      }
+    })
   }
 }
