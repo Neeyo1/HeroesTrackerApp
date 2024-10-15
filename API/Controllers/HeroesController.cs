@@ -2,10 +2,12 @@ using API.DTOs;
 using API.Entities;
 using API.Interfaces;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
+[Authorize]
 public class HeroesController(IHeroRepository heroRepository, IMapRepository mapRepository,
     IMapper mapper) : BaseApiController
 {
@@ -28,6 +30,7 @@ public class HeroesController(IHeroRepository heroRepository, IMapRepository map
         return Ok(result);
     }
 
+    [Authorize(Policy = "RequireModeratorRole")]
     [HttpPost]
     public async Task<ActionResult<HeroDto>> CreateHero(HeroCreateDto heroCreateDto)
     {
@@ -39,6 +42,7 @@ public class HeroesController(IHeroRepository heroRepository, IMapRepository map
         return BadRequest("Failed to create hero");
     }
 
+    [Authorize(Policy = "RequireModeratorRole")]
     [HttpPut("{heroId}")]
     public async Task<ActionResult<HeroDto>> EditHero(HeroCreateDto heroEditDto, int heroId)
     {
@@ -51,6 +55,7 @@ public class HeroesController(IHeroRepository heroRepository, IMapRepository map
         return BadRequest("Failed to edit hero");
     }
 
+    [Authorize(Policy = "RequireModeratorRole")]
     [HttpDelete("{heroId}")]
     public async Task<ActionResult> DeleteHero(int heroId)
     {

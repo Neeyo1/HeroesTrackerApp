@@ -102,6 +102,7 @@ public class GroupsController(IGroupRepository groupRepository, IUserRepository 
         return BadRequest("Failed to edit group");
     }
 
+    [Authorize(Policy = "RequireAdminRole")]
     [HttpDelete("{groupId}")]
     public async Task<ActionResult> DeleteGroup(int groupId)
     {
