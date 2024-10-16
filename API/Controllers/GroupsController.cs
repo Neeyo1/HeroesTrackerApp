@@ -20,7 +20,14 @@ public class GroupsController(IGroupRepository groupRepository, IUserRepository 
     public async Task<ActionResult<IEnumerable<GroupDto>>> GetGroups([FromQuery] GroupParams groupParams)
     {
         var groups = await groupRepository.GetGroupsAsync(groupParams);
-        groups.ForEach(async x => x.Members = await groupRepository.GetGroupMembersAsync(x.Id));
+        
+        var count = 0;
+        foreach (var group in groups)
+        {
+            groups[count].Members = await groupRepository.GetGroupMembersAsync(group.Id);
+            count++;
+        }
+
         Response.AddPaginationHeader(groups);
         return Ok(groups);
     }
@@ -32,7 +39,13 @@ public class GroupsController(IGroupRepository groupRepository, IUserRepository 
         if (user == null) return BadRequest("Could not find user");
 
         var groups = await groupRepository.GetMyGroupsAsync(user.Id, groupParams);
-        groups.ForEach(async x => x.Members = await groupRepository.GetGroupMembersAsync(x.Id));
+        
+        var count = 0;
+        foreach (var group in groups)
+        {
+            groups[count].Members = await groupRepository.GetGroupMembersAsync(group.Id);
+            count++;
+        }
         Response.AddPaginationHeader(groups);
         return Ok(groups);
     }
@@ -132,8 +145,8 @@ public class GroupsController(IGroupRepository groupRepository, IUserRepository 
         if(!await IsUserInGroup(user.Id, groupId) && !await IsUserAdmin(user))
             return Unauthorized();
 
-        var members = groupRepository.GetGroupMembersAsync(groupId);
-        return Ok(members.Result);
+        var members = await groupRepository.GetGroupMembersAsync(groupId);
+        return Ok(members);
     }
 
     [HttpPut("members/{groupId}")]
