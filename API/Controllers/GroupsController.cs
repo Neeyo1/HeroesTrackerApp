@@ -20,7 +20,7 @@ public class GroupsController(IGroupRepository groupRepository, IUserRepository 
     public async Task<ActionResult<IEnumerable<GroupDto>>> GetGroups([FromQuery] GroupParams groupParams)
     {
         var groups = await groupRepository.GetGroupsAsync(groupParams);
-        
+
         var count = 0;
         foreach (var group in groups)
         {
@@ -78,6 +78,12 @@ public class GroupsController(IGroupRepository groupRepository, IUserRepository 
     {
         var owner = await userRepository.GetUserByUsernameAsync(groupCreateDto.Owner.ToLower());
         if (owner == null) return BadRequest("Could not find user");
+
+        if (await groupRepository.GetGroupByGroupNameAndServerNameAsync(groupCreateDto.GroupName,
+            groupCreateDto.ServerName) != null)
+        {
+            return BadRequest("Group with this group name and server name already exists");
+        }
 
         var group = new Group
         {
