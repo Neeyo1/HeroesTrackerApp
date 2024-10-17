@@ -31,5 +31,15 @@
         <h4>Grupa istnieje od: {{group.createdAt.toString().substring(0, 10)}}</h4>
         <h4>Wlaściciel grupy: {{group.owner.knownAs}}</h4>
         <h4>Liczba użytkowników {{group.membersCount}}</h4>
+        @if (accountService.currentUser()?.id != group.owner.id) {
+            <p>
+                <button class="btn btn-dark mt-1"
+                        (click)="leaveGroup(group.id)"
+                >
+                    Opuść grupę
+                </button>
+            </p>
+        }
+        
     </div>
 }

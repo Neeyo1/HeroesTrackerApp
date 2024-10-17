@@ -88,4 +88,13 @@ export class GroupService {
   addOrRemoveModerator(userId: number, groupId: number, isModerator: boolean){
     return this.http.put(this.baseUrl + `groups/moderators/${groupId}?userToEditId=${userId}&mod=${isModerator}`, {});
   }
+
+  leaveGroup(groupId: number){
+    return this.http.post(this.baseUrl + `groups/members/${groupId}/leave`, {}).pipe(
+      tap(() => {
+        this.groupCache.clear();
+        this.singleGroupCache.clear();
+      })
+    );
+  }
 }

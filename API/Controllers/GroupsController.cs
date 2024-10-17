@@ -208,6 +208,27 @@ public class GroupsController(IGroupRepository groupRepository, IUserRepository 
         return BadRequest("Failed to edit member");
     }
 
+    [HttpPost("members/{groupId}/leave")]
+    public async Task<ActionResult> LeaveGroup(int groupId)
+    {
+        var user = await userRepository.GetUserByUsernameAsync(User.GetUsername());
+        if (user == null) return BadRequest("Could not find user");
+
+        var group = await groupRepository.GetGroupAsync(groupId);
+        if (group == null) return BadRequest("Could not find group");
+
+        if (group.OwnerId == user.Id) return BadRequest("Group owner cannot leave group");
+
+        var userGroup = await groupRepository.GetUserGroupAsync(user.Id, groupId);
+        if (userGroup == null) return BadRequest("You are not member of this group");
+
+        groupRepository.RemoveUserFromGroup(userGroup);
+        group.MembersCount--;
+
+        if (await groupRepository.Complete()) return NoContent();
+        return BadRequest("Failed to edit member");
+    }
+
     [HttpPut("moderators/{groupId}")]
     public async Task<ActionResult<IEnumerable<MemberDto>>> AddOrRemoveModeratorForGroup(int groupId, [FromQuery]int userToEditId, string mod)
     {
