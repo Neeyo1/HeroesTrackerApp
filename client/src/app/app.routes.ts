@@ -20,6 +20,7 @@ import { moderatorGuard } from './_guards/moderator.guard';
 import { AdminUserListComponent } from './admin/admin-user-list/admin-user-list.component';
 import { adminGuard } from './_guards/admin.guard';
 import { ProfileEditComponent } from './profile/profile-edit/profile-edit.component';
+import { ChangePasswordComponent } from './profile/change-password/change-password.component';
 
 export const routes: Routes = [
     {path: '', component: HomeComponent},
@@ -33,6 +34,7 @@ export const routes: Routes = [
             {path: 'groups/:id/timers', component: GroupTimersComponent},
             {path: 'groups/:id/members', component: GroupMembersComponent},
             {path: 'profile/edit', component: ProfileEditComponent},
+            {path: 'profile/change-password', component: ChangePasswordComponent},
         ]
     },
     {

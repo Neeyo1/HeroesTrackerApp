@@ -36,4 +36,7 @@ export class NavComponent {
     this.router.navigateByUrl("/profile/edit");
   }
 
+  changePassword(){
+    this.router.navigateByUrl("/profile/change-password");
+  }
 }

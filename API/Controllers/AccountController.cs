@@ -6,6 +6,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace API.Controllers;
 
@@ -47,7 +48,7 @@ public class AccountController(UserManager<AppUser> userManager, ITokenService t
     }
 
     [HttpPut("edit")]
-    public async Task<ActionResult<UserDto>> UserEdit(UserEditDto userEditDto)
+    public async Task<ActionResult<UserDto>> UserEditKnownAs(UserEditKnownAsDto userEditKnownAsDto)
     {
         var user = await userManager.FindByNameAsync(User.GetUsername());
         if (user == null) return BadRequest("User not found");
@@ -56,9 +57,13 @@ public class AccountController(UserManager<AppUser> userManager, ITokenService t
         if (userRoles.Contains("Admin"))
             return BadRequest("Cannot change nickname as an admin");
 
-        if (await KnownAsExists(userEditDto.KnownAs)) return BadRequest("Nickname is taken");
-        user.KnownAs = userEditDto.KnownAs;
-
+        if (user.KnownAs == userEditKnownAsDto.KnownAs) return BadRequest("This is your current nickname");
+        else
+        {
+            if (await KnownAsExists(userEditKnownAsDto.KnownAs)) return BadRequest("Nickname is taken");
+            else user.KnownAs = userEditKnownAsDto.KnownAs;
+        }
+        
         if (await userRepository.Complete())
         {
             var userToReturn = mapper.Map<UserDto>(user);
@@ -67,6 +72,22 @@ public class AccountController(UserManager<AppUser> userManager, ITokenService t
             return userToReturn;
         }
         return BadRequest("Failed to update user");
+    }
+
+    [HttpPut("change-password")]
+    public async Task<ActionResult<UserDto>> UserEditPassword(UserEditPasswordDto userEditPasswordDto)
+    {
+        var user = await userManager.FindByNameAsync(User.GetUsername());
+        if (user == null) return BadRequest("User not found");
+
+        var result = await userManager.ChangePasswordAsync(user, userEditPasswordDto.OldPassword, 
+            userEditPasswordDto.NewPassword);
+        if (!result.Succeeded) return BadRequest(result.Errors);
+        
+        var userToReturn = mapper.Map<UserDto>(user);
+        userToReturn.Token = await tokenService.CreateToken(user);
+
+        return userToReturn;
     }
 
     private async Task<bool> UserExists(string username)

@@ -54,6 +54,17 @@ export class AccountService {
     )
   }
 
+  changePassword(model: any){
+    return this.http.put<User>(this.baseUrl + "account/change-password", model).pipe(
+      map(user => {
+        if (user){
+          this.setCurrentUser(user);
+        }
+        return user;
+      })
+    )
+  }
+
   logout(){
     localStorage.removeItem("user");
     this.currentUser.set(null);
