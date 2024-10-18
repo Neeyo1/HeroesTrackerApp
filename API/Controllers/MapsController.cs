@@ -64,6 +64,20 @@ public class MapsController(IMapRepository mapRepository, IMapper mapper) : Base
         return BadRequest("Failed to delete map");
     }
 
+    [Authorize(Policy = "RequireModeratorRole")]
+    [HttpDelete("all")]
+    public async Task<ActionResult> DeleteMaps()
+    {
+        var maps = await mapRepository.GetMapsRawAsync();
+        foreach (var map in maps)
+        {
+            mapRepository.DeleteMap(map);
+        }
+        
+        if (await mapRepository.Complete()) return NoContent();
+        return BadRequest("Failed to delete maps");
+    }
+
     [HttpGet("areas")]
     public async Task<ActionResult<IEnumerable<MapAreaDto>>> GetMapAreas()
     {
@@ -116,5 +130,19 @@ public class MapsController(IMapRepository mapRepository, IMapper mapper) : Base
 
         if (await mapRepository.Complete()) return NoContent();
         return BadRequest("Failed to delete map area");
+    }
+
+    [Authorize(Policy = "RequireModeratorRole")]
+    [HttpDelete("areas/all")]
+    public async Task<ActionResult> DeleteMapAreas()
+    {
+        var mapAreas = await mapRepository.GetMapAreasRawAsync();
+        foreach (var mapArea in mapAreas)
+        {
+            mapRepository.DeleteMapArea(mapArea);
+        }
+        
+        if (await mapRepository.Complete()) return NoContent();
+        return BadRequest("Failed to delete map areas");
     }
 }

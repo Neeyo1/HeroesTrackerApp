@@ -115,6 +115,12 @@ export class AdminService {
     });
   }
 
+  deleteHeroes(){
+    return this.http.delete(this.baseUrl + "heroes/all").subscribe({
+      next: () => this.heroes.set([])
+    });
+  }
+
   createHero(model: any){
     return this.http.post<Hero>(this.baseUrl + "heroes", model).pipe(
       tap(hero => this.heroes.update(x => [hero, ...x]))
@@ -133,6 +139,12 @@ export class AdminService {
     });
   }
 
+  deleteMapAreas(){
+    return this.http.delete(this.baseUrl + "maps/areas/all").subscribe({
+      next: () => this.mapAreas.set([])
+    });
+  }
+
   createMapArea(model: any){
     return this.http.post<MapArea>(this.baseUrl + "maps/areas", model).pipe(
       tap(mapArea => this.mapAreas.update(x => [mapArea, ...x]))
@@ -148,6 +160,12 @@ export class AdminService {
   deleteMap(mapId: number){
     return this.http.delete(this.baseUrl + "maps/" + mapId).subscribe({
       next: () => this.maps.update(x => x.filter(map => map.id != mapId))
+    });
+  }
+
+  deleteMaps(){
+    return this.http.delete(this.baseUrl + "maps/all").subscribe({
+      next: () => this.maps.set([])
     });
   }
 

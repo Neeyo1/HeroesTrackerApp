@@ -67,4 +67,18 @@ public class HeroesController(IHeroRepository heroRepository, IMapRepository map
         if (await heroRepository.Complete()) return NoContent();
         return BadRequest("Failed to delete hero");
     }
+
+    [Authorize(Policy = "RequireModeratorRole")]
+    [HttpDelete("all")]
+    public async Task<ActionResult> DeleteHeroes()
+    {
+        var heroes = await heroRepository.GetHeroesRawAsync();
+        foreach (var hero in heroes)
+        {
+            heroRepository.DeleteHero(hero);
+        }
+        
+        if (await heroRepository.Complete()) return NoContent();
+        return BadRequest("Failed to delete heroes");
+    }
 }

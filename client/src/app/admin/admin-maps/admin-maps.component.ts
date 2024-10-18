@@ -32,4 +32,14 @@ export class AdminMapsComponent {
       }
     })
   }
+
+  deleteMaps(){
+    this.confirmService.confirm()?.subscribe({
+      next: result => {
+        if (result){
+          this.adminService.deleteMaps();
+        }
+      }
+    })
+  }
 }

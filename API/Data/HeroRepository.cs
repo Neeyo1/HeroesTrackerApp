@@ -32,6 +32,12 @@ public class HeroRepository(DataContext context, IMapper mapper) : IHeroReposito
             .ToListAsync();
     }
 
+    public async Task<IEnumerable<Hero>> GetHeroesRawAsync()
+    {
+        return await context.Heroes
+            .ToListAsync();
+    }
+
     public async Task<IEnumerable<TimerHeroDto>> GetTimerHeroesAsync()
     {
         return await context.Heroes

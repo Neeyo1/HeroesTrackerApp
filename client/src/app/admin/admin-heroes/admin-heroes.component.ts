@@ -33,4 +33,14 @@ export class AdminHeroesComponent implements OnInit{
       }
     })
   }
+
+  deleteHeroes(){
+    this.confirmService.confirm()?.subscribe({
+      next: result => {
+        if (result){
+          this.adminService.deleteHeroes();
+        }
+      }
+    })
+  }
 }

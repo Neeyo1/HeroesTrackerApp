@@ -32,6 +32,12 @@ public class MapRepository(DataContext context, IMapper mapper) : IMapRepository
             .ToListAsync();
     }
 
+    public async Task<IEnumerable<Map>> GetMapsRawAsync()
+    {
+        return await context.Maps
+            .ToListAsync();
+    }
+
     public async Task<IEnumerable<MapDto>> GetMapsForHeroAsync(int heroId)
     {
         return await context.Maps
@@ -60,6 +66,12 @@ public class MapRepository(DataContext context, IMapper mapper) : IMapRepository
     {
         return await context.MapAreas
             .ProjectTo<MapAreaDto>(mapper.ConfigurationProvider)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<MapArea>> GetMapAreasRawAsync()
+    {
+        return await context.MapAreas
             .ToListAsync();
     }
 

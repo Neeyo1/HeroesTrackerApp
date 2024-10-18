@@ -32,4 +32,14 @@ export class AdminMapAreasComponent implements OnInit{
       }
     })
   }
+
+  deleteMapAreas(){
+    this.confirmService.confirm()?.subscribe({
+      next: result => {
+        if (result){
+          this.adminService.deleteMapAreas();
+        }
+      }
+    })
+  }
 }
