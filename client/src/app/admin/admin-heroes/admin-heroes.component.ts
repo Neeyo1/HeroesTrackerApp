@@ -1,7 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { AdminService } from '../../_services/admin.service';
 import { ToastrService } from 'ngx-toastr';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { ConfirmService } from '../../_services/confirm.service';
 
@@ -15,6 +15,7 @@ import { ConfirmService } from '../../_services/confirm.service';
 export class AdminHeroesComponent implements OnInit{
   adminService = inject(AdminService);
   private confirmService = inject(ConfirmService);
+  private router = inject(Router);
 
   ngOnInit(): void {
     if (this.adminService.heroes().length == 0) this.loadHeroes();
@@ -42,5 +43,9 @@ export class AdminHeroesComponent implements OnInit{
         }
       }
     })
+  }
+
+  editHero(heroId: number){
+    this.router.navigateByUrl(`/admin/event/heroes/${heroId}/edit`);
   }
 }

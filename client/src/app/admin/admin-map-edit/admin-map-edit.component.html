@@ -1,0 +1,41 @@
+<div class="d-flex align-items-center justify-content-center mt-5">
+    <div class="col-4">
+    <form #registerForm="ngForm" (ngSubmit)="editMap()" autocomplete="off">
+        <h2 class="text-center text-dark">Edytuj mape</h2>
+        <hr>
+        <div class="mb-3 form-floating">
+            <input 
+                type="text"
+                class="form-control"
+                name="name"
+                [(ngModel)]="model.name"
+                placeholder="Nazwa mapy"
+            >
+            <label>Nazwa mapy</label>
+        </div>
+        <label>Wybór herosa</label>
+        <select class="form-select mb-3"
+                name="heroId"
+                [(ngModel)]="model.heroId"
+            >
+            @for (hero of adminService.heroes(); track hero.id) {
+                <option value="{{hero.id}}">{{hero.name}}</option>
+            }
+        </select>
+        
+        <label>Wybór okolicy</label>
+        <select class="form-select mb-3"
+                name="mapAreaId"
+                [(ngModel)]="model.mapAreaId"
+            >
+            @for (mapArea of adminService.mapAreas(); track mapArea.id) {
+                <option value="{{mapArea.id}}">{{mapArea.name}}</option>
+            }
+        </select>
+
+        <div class="text-center">
+            <button class="btn btn-dark me-2" type="submit">Edytuj</button>
+        </div>
+    </form>
+    </div>
+</div>

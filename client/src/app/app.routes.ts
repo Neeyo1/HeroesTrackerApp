@@ -21,6 +21,9 @@ import { AdminUserListComponent } from './admin/admin-user-list/admin-user-list.
 import { adminGuard } from './_guards/admin.guard';
 import { ProfileEditComponent } from './profile/profile-edit/profile-edit.component';
 import { ChangePasswordComponent } from './profile/change-password/change-password.component';
+import { AdminHeroEditComponent } from './admin/admin-hero-edit/admin-hero-edit.component';
+import { AdminMapAreaEditComponent } from './admin/admin-map-area-edit/admin-map-area-edit.component';
+import { AdminMapEditComponent } from './admin/admin-map-edit/admin-map-edit.component';
 
 export const routes: Routes = [
     {path: '', component: HomeComponent},
@@ -50,6 +53,9 @@ export const routes: Routes = [
             {path: 'admin/event/heroes/create', component: AdminHeroCreateComponent},
             {path: 'admin/event/map-areas/create', component: AdminMapAreaCreateComponent},
             {path: 'admin/event/maps/create', component: AdminMapCreateComponent},
+            {path: 'admin/event/heroes/:id/edit', component: AdminHeroEditComponent},
+            {path: 'admin/event/map-areas/:id/edit', component: AdminMapAreaEditComponent},
+            {path: 'admin/event/maps/:id/edit', component: AdminMapEditComponent},
             {path: 'admin/users', component: AdminUserListComponent, canActivate: [adminGuard]},
         ]
     },

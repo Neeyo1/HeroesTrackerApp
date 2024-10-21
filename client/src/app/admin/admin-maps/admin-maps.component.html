@@ -35,11 +35,18 @@
                 <td>{{map.heroId}}</td>
                 <td>{{map.mapAreaId}}</td>
                 <td>
-                    <button class="btn btn-danger btn-sm"
+                    <button class="btn btn-danger btn-sm me-1"
                             (click)="deleteMap(map.id)"
                             tooltip="Usuń mapę"
                     >
                         <i class="fa-solid fa-trash fa-sm"></i>
+                    </button>
+
+                    <button class="btn btn-dark btn-sm me-1"
+                            (click)="editMap(map.id)"
+                            tooltip="Edytuj Okolice map"
+                    >
+                        <i class="fa-solid fa-pen-to-square fa-sm"></i>
                     </button>
                 </td>
             </tr>

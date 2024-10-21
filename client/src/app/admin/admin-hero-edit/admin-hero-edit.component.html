@@ -1,0 +1,33 @@
+<div class="d-flex align-items-center justify-content-center mt-5">
+    <div class="col-4">
+    <form #registerForm="ngForm" (ngSubmit)="editHero()" autocomplete="off">
+        <h2 class="text-center text-dark">Edytuj herosa</h2>
+        <hr>
+        <div class="mb-3 form-floating">
+            <input 
+                type="text"
+                class="form-control"
+                name="name"
+                [(ngModel)]="model.name"
+                placeholder="Nazwa herosa"
+            >
+            <label>Nazwa herosa</label>
+        </div>
+        
+        <div class="mb-3 form-floating">
+            <input 
+                type="number"
+                class="form-control"
+                name="level"
+                [(ngModel)]="model.level"
+                placeholder="Poziom herosa"
+            >
+            <label>Poziom herosa</label>
+        </div>
+
+        <div class="text-center">
+            <button class="btn btn-dark me-2" type="submit">Edytuj</button>
+        </div>
+    </form>
+    </div>
+</div>

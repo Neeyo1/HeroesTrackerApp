@@ -127,6 +127,12 @@ export class AdminService {
     )
   }
 
+  editHero(heroId: number, model: any){
+    return this.http.put<Hero>(this.baseUrl + "heroes/" + heroId, model).pipe(
+      tap(hero => this.heroes.update(x => x.map(h => h.id == heroId ? hero : h)))
+    );
+  }
+
   getMapAreas(){
     return this.http.get<MapArea[]>(this.baseUrl + "maps/areas").subscribe({
       next: mapAreas => this.mapAreas.set(mapAreas)
@@ -151,6 +157,12 @@ export class AdminService {
     )
   }
 
+  editMapArea(mapAreaId: number, model: any){
+    return this.http.put<MapArea>(this.baseUrl + "maps/areas/" + mapAreaId, model).pipe(
+      tap(mapArea => this.mapAreas.update(x => x.map(m => m.id == mapAreaId ? mapArea : m)))
+    );
+  }
+
   getMaps(){
     return this.http.get<Map[]>(this.baseUrl + "maps").subscribe({
       next: maps => this.maps.set(maps)
@@ -173,6 +185,12 @@ export class AdminService {
     return this.http.post<Map>(this.baseUrl + "maps", model).pipe(
       tap(map => this.maps.update(x => [map, ...x]))
     )
+  }
+
+  editMap(mapId: number, model: any){
+    return this.http.put<Map>(this.baseUrl + "maps/" + mapId, model).pipe(
+      tap(map => this.maps.update(x => x.map(m => m.id == mapId ? map : m)))
+    );
   }
 
   getUsers(){
