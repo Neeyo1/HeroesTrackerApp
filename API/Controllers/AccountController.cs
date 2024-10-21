@@ -97,6 +97,6 @@ public class AccountController(UserManager<AppUser> userManager, ITokenService t
 
     private async Task<bool> KnownAsExists(string knownAs)
     {
-        return await userManager.Users.AnyAsync(x => x.KnownAs == knownAs);
+        return await userManager.Users.AnyAsync(x => x.KnownAs.ToUpper() == knownAs.ToUpper());
     }
 }
