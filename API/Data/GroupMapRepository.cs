@@ -24,6 +24,7 @@ public class GroupMapRepository(DataContext context, IMapper mapper) : IGroupMap
     public async Task<GroupMap?> GetGroupMapByMapNameAsync(int groupId, string mapName)
     {
         return await context.GroupMaps
+            .Include(x => x.Map)
             .Where(x => x.GroupId == groupId)
             .FirstOrDefaultAsync(x => x.Map.Name == mapName);
     }
@@ -32,6 +33,14 @@ public class GroupMapRepository(DataContext context, IMapper mapper) : IGroupMap
     {
         return await context.GroupMaps
             .Where(x => x.GroupId == groupId)
+            .ProjectTo<GroupMapDto>(mapper.ConfigurationProvider)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<GroupMapDto>> GetGroupMapsForHeroAsync(int groupId, int heroId)
+    {
+        return await context.GroupMaps
+            .Where(x => x.GroupId == groupId && x.Map.HeroId == heroId)
             .ProjectTo<GroupMapDto>(mapper.ConfigurationProvider)
             .ToListAsync();
     }

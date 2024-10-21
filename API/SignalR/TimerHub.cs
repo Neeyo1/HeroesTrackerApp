@@ -1,3 +1,4 @@
+using System.Text.Json;
 using API.DTOs;
 using API.Entities;
 using API.Extensions;
@@ -31,10 +32,11 @@ public class TimerHub(IGroupRepository groupRepository, IUserRepository userRepo
         (string groupName, string serverName, AppUser user, Group group) = await ValidateData(Context);
 
         var heroes = await heroRepository.GetTimerHeroesAsync();
-        var groupMaps = await groupMapRepository.GetGroupMapsAsync(group.Id);
+        //var groupMaps = await groupMapRepository.GetGroupMapsAsync(group.Id);
         
         foreach (var hero in heroes)
         {
+            var groupMaps = await groupMapRepository.GetGroupMapsForHeroAsync(group.Id, hero.Id);
             foreach (var groupMap in groupMaps)
             {
                 var location = hero.Locations.FirstOrDefault(x => x.Id == groupMap.MapAreaId);
@@ -74,14 +76,20 @@ public class TimerHub(IGroupRepository groupRepository, IUserRepository userRepo
 
         var groupMap = await groupMapRepository.GetGroupMapByMapNameAsync(group.Id, mapName)
             ?? throw new Exception("Map does not exist");
-
+        
         groupMap.Updated = DateTime.UtcNow;
         groupMap.UpdatedBy = user.KnownAs;
 
         if (await groupRepository.Complete())
         {
+            var result = new
+            {
+                mapName,
+                updatedBy = user.KnownAs
+            };
+                
             await Clients.Group(groupName + "_" + serverName)
-                .SendAsync("UpdateTimer", new {groupMap.Map.Name, groupMap.Updated, groupMap.UpdatedBy});
+                .SendAsync("UpdateTimer", JsonSerializer.Serialize(result));
         }
     }
 
