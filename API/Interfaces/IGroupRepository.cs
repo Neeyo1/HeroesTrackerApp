@@ -22,5 +22,6 @@ public interface IGroupRepository
     Task<IEnumerable<string?>> GetGroupMembersUsernamesAsync(int groupId);
     Task<IEnumerable<string?>> GetGroupModeratorsUsernamesAsync(int groupId);
     Task<bool> IsUserModeratorAsync(int userId, int groupId);
+    Task<bool> GroupExistsAsync(string groupName, string serverName);
     Task<bool> Complete();
 }

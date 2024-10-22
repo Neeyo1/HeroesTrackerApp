@@ -24,6 +24,7 @@ import { ChangePasswordComponent } from './profile/change-password/change-passwo
 import { AdminHeroEditComponent } from './admin/admin-hero-edit/admin-hero-edit.component';
 import { AdminMapAreaEditComponent } from './admin/admin-map-area-edit/admin-map-area-edit.component';
 import { AdminMapEditComponent } from './admin/admin-map-edit/admin-map-edit.component';
+import { AdminGroupEditComponent } from './admin/admin-group-edit/admin-group-edit.component';
 
 export const routes: Routes = [
     {path: '', component: HomeComponent},
@@ -47,6 +48,7 @@ export const routes: Routes = [
         children: [
             {path: 'admin/groups', component: AdminGroupsComponent},
             {path: 'admin/group/create', component: AdminGroupCreateComponent},
+            {path: 'admin/group/:id/edit', component: AdminGroupEditComponent, canActivate: [adminGuard]},
             {path: 'admin/event/heroes', component: AdminHeroesComponent},
             {path: 'admin/event/map-areas', component: AdminMapAreasComponent},
             {path: 'admin/event/maps', component: AdminMapsComponent},

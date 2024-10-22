@@ -6,6 +6,7 @@ import { PaginationModule } from 'ngx-bootstrap/pagination';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { ToastrService } from 'ngx-toastr';
 import { ConfirmService } from '../../_services/confirm.service';
+import { AccountService } from '../../_services/account.service';
 
 @Component({
   selector: 'app-admin-groups',
@@ -16,6 +17,7 @@ import { ConfirmService } from '../../_services/confirm.service';
 })
 export class AdminGroupsComponent implements OnInit{
   adminService = inject(AdminService);
+  accountService = inject(AccountService);
   private router = inject(Router);
   private toastrService = inject(ToastrService);
   private confirmService = inject(ConfirmService);
@@ -42,6 +44,10 @@ export class AdminGroupsComponent implements OnInit{
         }
       }
     })
+  }
+
+  editGroup(groupId: number){
+    this.router.navigateByUrl(`/admin/group/${groupId}/edit`);
   }
 
   resetFilters(){

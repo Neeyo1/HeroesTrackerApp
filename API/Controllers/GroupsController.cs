@@ -103,7 +103,7 @@ public class GroupsController(IGroupRepository groupRepository, IUserRepository 
         return BadRequest("Failed to add owner to group");
     }
 
-    [Authorize(Policy = "RequireModeratorRole")]
+    [Authorize(Policy = "RequireAdminRole")]
     [HttpPut("{groupId}")]
     public async Task<ActionResult<GroupDto>> EditGroup(GroupCreateDto groupEditDto, int groupId)
     {
@@ -113,9 +113,33 @@ public class GroupsController(IGroupRepository groupRepository, IUserRepository 
         var group = await groupRepository.GetGroupAsync(groupId);
         if (group == null) return BadRequest("Could not find group");
 
-        if (group.OwnerId != user.Id) return Unauthorized();
-        
-        mapper.Map(groupEditDto, group);
+        if (group.GroupName != groupEditDto.GroupName || group.ServerName != groupEditDto.ServerName)
+        {
+            var otherGroup = await groupRepository.GetGroupByGroupNameAndServerNameAsync(
+                    groupEditDto.GroupName, groupEditDto.ServerName);
+            if (otherGroup == null || otherGroup == group)
+            {
+                group.GroupName = groupEditDto.GroupName;
+                group.ServerName = groupEditDto.ServerName;
+            }
+        }
+
+        if (group.Owner.KnownAs != groupEditDto.Owner)
+        {
+            var newOwner = await userRepository.GetUserByKnownAsAsync(groupEditDto.Owner);
+            if (newOwner == null) return BadRequest("New owner user does not exist");
+
+            var userGroup = await groupRepository.GetUserGroupAsync(newOwner.Id, groupId);
+            if (userGroup == null) return BadRequest("New owner is not member of group");
+
+            var isUserModerator = await groupRepository.IsUserModeratorAsync(newOwner.Id, groupId);
+            if (isUserModerator)
+            {
+                groupRepository.RemoveUserFromModerators(userGroup);
+            }
+
+            group.Owner = newOwner;
+        }
 
         if (await groupRepository.Complete()) return Ok(mapper.Map<GroupDto>(group));
         return BadRequest("Failed to edit group");

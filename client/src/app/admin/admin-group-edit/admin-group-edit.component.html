@@ -1,0 +1,45 @@
+<div class="d-flex align-items-center justify-content-center mt-5">
+    <div class="col-4">
+    <form [formGroup]="editGroupForm" (ngSubmit)="editGroup()" autocomplete="off">
+        <h2 class="text-center text-dark">Edytuj grupę</h2>
+        <hr>
+
+        <app-text-input
+            [formControl]="$any(editGroupForm.controls['groupName'])"
+            [label]="'Nazwa grupy'"
+        ></app-text-input>
+
+        <app-text-input
+            [formControl]="$any(editGroupForm.controls['serverName'])"
+            [label]="'Nazwa serwera'"
+        ></app-text-input>
+
+        <div class="form-floating mb-3">
+            <select formControlName="owner"
+                    class="form-select" 
+            >
+                @for (member of groupMembers(); track member.id) {
+                    <option [value]="member.knownAs">{{member.knownAs}}</option>
+                }
+            </select>
+        </div>
+        
+
+        @if (validationErrors) {
+            <div class="alert alert-danger text-start">
+                <ul>
+                    @for (error of validationErrors; track $index) {
+                        <li>{{error}}</li>
+                    }
+                </ul>
+            </div>
+        }
+
+        <div class="form-group text-center">
+            <button class="btn btn-dark me-2" 
+                    type="submit"
+                    [disabled]="!editGroupForm.valid">Edytuj grupę</button>
+        </div>
+    </form>
+    </div>
+</div>

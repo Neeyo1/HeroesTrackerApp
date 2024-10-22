@@ -123,12 +123,20 @@
                     >
                         <i class="fa-solid fa-plus fa-sm"></i>
                     </button>
-                    <button class="btn btn-dark btn-sm" 
+                    <button class="btn btn-dark btn-sm me-1" 
                             (click)="deleteTimersForGroup(group.id)"
                             tooltip="Usuń timery"
                     >
                         <i class="fa-solid fa-minus fa-sm"></i>
                     </button>
+                    @if (accountService.roles().includes('Admin')) {
+                        <button class="btn btn-dark btn-sm"
+                                (click)="editGroup(group.id)"
+                                tooltip="Edytuj grupę"
+                        >
+                            <i class="fa-solid fa-pen-to-square fa-sm"></i>
+                        </button>
+                    }
                 </td>
             </tr>
         }

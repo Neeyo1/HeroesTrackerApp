@@ -173,6 +173,16 @@ public class GroupRepository(DataContext context, IMapper mapper) : IGroupReposi
         return userGroup.IsModerator;
     }
 
+    public async Task<bool> GroupExistsAsync(string groupName, string serverName)
+    {
+        var group = await context.Groups
+            .Where(x => x.ServerName == serverName)
+            .FirstOrDefaultAsync(x => x.GroupName == groupName);
+
+        if (group == null) return false;
+        return true;
+    }
+
     public async Task<bool> Complete()
     {
         return await context.SaveChangesAsync() > 0;

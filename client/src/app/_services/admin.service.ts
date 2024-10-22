@@ -2,7 +2,7 @@ import { inject, Injectable, signal } from '@angular/core';
 import { Group } from '../_models/group';
 import { environment } from '../../environments/environment';
 import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
-import { tap } from 'rxjs';
+import { of, tap } from 'rxjs';
 import { Hero } from '../_models/hero';
 import { MapArea } from '../_models/mapArea';
 import { Map } from '../_models/map';
@@ -23,6 +23,7 @@ export class AdminService {
   maps = signal<Map[]>([]);
 
   groupCache = new Map();
+  singleGroupCache = new Map();
   userCache = new Map();
 
   paginatedResultGroup = signal<PaginatedResult<Group[]> | null>(null);
@@ -85,6 +86,23 @@ export class AdminService {
     });
   }
 
+  getGroup(id: number){
+    const group: Group = [...this.groupCache.values()]
+      .reduce((arr, elem) => arr.concat(elem.body), [])
+      .find((g: Group) => g.id == id);
+
+    if (group) return of(group);
+
+    const groupFromSingleCache = this.singleGroupCache.get(`group-${id}`);
+    if (groupFromSingleCache) return of(groupFromSingleCache);
+    
+    return this.http.get<Group>(this.baseUrl + "groups/" + id + "?withMembers=true").pipe(
+      tap(groupFromApi => {
+        this.singleGroupCache.set(`group-${groupFromApi.id}`, groupFromApi);
+      }
+    ));
+  }
+
   deleteGroup(groupId: number){
     return this.http.delete(this.baseUrl + "groups/" + groupId).subscribe({
       next: () => {
@@ -98,6 +116,16 @@ export class AdminService {
     return this.http.post<Group>(this.baseUrl + "groups", model).pipe(
       tap(() => {
         this.groupCache.clear();
+        this.getGroups();
+      })
+    );
+  }
+
+  editGroup(groupId: number, model: any){
+    return this.http.put<Group>(this.baseUrl + `groups/${groupId}`, model).pipe(
+      tap(() => {
+        this.groupCache.clear();
+        this.singleGroupCache.clear();
         this.getGroups();
       })
     );
